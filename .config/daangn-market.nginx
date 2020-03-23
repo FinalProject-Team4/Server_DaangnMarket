@@ -6,10 +6,10 @@ server {
 
     location / {
         include         /etc/nginx/proxy_params;
-        proxy_pass      http://unix:/run/daangnMarket.sock;
+        proxy_pass      http://unix:/run/daangn-market.sock;
     }
 
     location /static/ {
-        alias           /srv/daangnMarket/staticfiles/;
+        alias           /srv/daangn-market/staticfiles/;
     }
 }
