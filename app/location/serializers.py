@@ -16,3 +16,10 @@ class LocateSerializer(serializers.ModelSerializer):
         )
 
 
+class DongSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Locate
+        fields = (
+            'id', 'dong', 'gu', 'longitude', 'latitude', 'address'
+        )
