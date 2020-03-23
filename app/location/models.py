@@ -56,3 +56,4 @@ class Locate(models.Model):
             self.latitude = float(0)
             self.longitude = float(0)
             return True
+

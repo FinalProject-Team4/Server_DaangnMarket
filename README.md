@@ -10,4 +10,3 @@ $ brew install postgis
 $ brew install gdal
 $ brew install libgeoip
 ```
-Hello
