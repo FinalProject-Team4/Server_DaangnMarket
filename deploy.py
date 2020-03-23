@@ -6,8 +6,8 @@ from pathlib import Path
 
 HOME = str(Path.home())
 PROJECT_NAME = 'daangn-market'
-SOURCE = os.path.join(HOME, 'Desktop', 'daangnMarket', 'Server_DaangnMarket_Fork')
-SECRETS_FILE = os.path.join(SOURCE, 'secrets.json')
+PROJECT_DIR = os.path.join(HOME, 'Desktop', PROJECT_NAME, 'Server_DaangnMarket_Fork')
+SECRETS_FILE = os.path.join(PROJECT_DIR, 'secrets.json')
 
 USER = 'ubuntu'
 HOST = json.load(open(SECRETS_FILE))['HOST']
@@ -45,7 +45,7 @@ def docker_run(cmd, container=PROJECT_NAME, daemon=False, check_error=True, host
 
 # docker build, push from LOCAL
 def local_build_push():
-    run(f'poetry export -f requirements.txt > requirements.txt > /dev/null')
+    run(f'poetry export -f requirements.txt > requirements.txt')
     run(f'docker build -q -t {DOCKER_IMAGE}:{DOCKER_IMAGE_TAG} .')
     run(f'docker push {DOCKER_IMAGE}:{DOCKER_IMAGE_TAG} | grep -e push -e digest')
 
@@ -97,14 +97,14 @@ if __name__ == '__main__':
     try:
         print(">>>>> local_build_push()")
         local_build_push()
-        # print(">>>>> server_init()")
-        # server_init()
-        # print(">>>>> server_run()")
-        # server_run()
-        # print(">>>>> copy_secretes()")
-        # copy_secrets()
-        # print(">>>>> server_setting()")
-        # server_setting()
+        print(">>>>> server_init()")
+        server_init()
+        print(">>>>> server_run()")
+        server_run()
+        print(">>>>> copy_secretes()")
+        copy_secrets()
+        print(">>>>> server_setting()")
+        server_setting()
     except subprocess.CalledProcessError as e:
         print('deploy.py Error!')
         print(' cmd:', e.cmd)

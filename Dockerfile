@@ -17,8 +17,8 @@ RUN         pip install -r /tmp/requirements.txt
 
 
 # 소스코드 복사
-COPY        ./app /srv/daangnMarket/app
-WORKDIR     /srv/daangnMarket/app
+COPY        ./app /srv/daangn-market/app
+WORKDIR     /srv/daangn-market/app
 
 
 # config 파일 복사(nginx, gunicorn, supervisor)
@@ -26,8 +26,8 @@ COPY        ./.config ../.config
 
 # Nginx설정파일 링크, 기본 서버 설정 삭제
 RUN         rm /etc/nginx/sites-enabled/default
-COPY        ./.config/daangnMarket.nginx /etc/nginx/sites-available
-RUN         ln /etc/nginx/sites-available/daangnMarket.nginx /etc/nginx/sites-enabled/daangnMarket.nginx
+COPY        .config/daangn-market.nginx /etc/nginx/sites-available
+RUN         ln /etc/nginx/sites-available/daangn-market.nginx /etc/nginx/sites-enabled/daangn-market.nginx
 
 # gunicorn 로그폴더 생성
 RUN         mkdir /var/log/gunicorn
