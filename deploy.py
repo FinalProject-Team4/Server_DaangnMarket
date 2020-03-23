@@ -90,7 +90,7 @@ def server_setting():
     # docker_run(f'python manage.py migrate > /dev/null')
 
     # start supervisor
-    docker_run(f'supervisord -c /srv/daangnMarket/.config/supervisord.conf -n', daemon=True)
+    docker_run(f'supervisord -c /srv/daangn-market/.config/supervisord.conf -n', daemon=True)
 
 
 if __name__ == '__main__':

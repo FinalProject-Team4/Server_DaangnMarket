@@ -24,5 +24,4 @@ deploy.py
 poetry.lock
 pyproject.toml
 LICENSE
-requirements.txt
 
