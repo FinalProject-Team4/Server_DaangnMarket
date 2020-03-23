@@ -1,0 +1,15 @@
+server {
+    listen 80;
+
+    server_name default_server;
+    charset utf-8;
+
+    location / {
+        include         /etc/nginx/proxy_params;
+        proxy_pass      http://unix:/run/daangn-market.sock;
+    }
+
+    location /static/ {
+        alias           /srv/daangn-market/staticfiles/;
+    }
+}
