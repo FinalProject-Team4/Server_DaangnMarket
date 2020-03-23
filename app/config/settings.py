@@ -4,6 +4,11 @@ import json
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 
+# aad/.media
+# User-uploaded static files의 기본 경로
+MEDIA_ROOT = os.path.join(ROOT_DIR, '.media')
+MEDIA_URL = '/media/'
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '946wit_ka_)bsr412&@6xn6hkql6e=y($xm&830i!l6_!4w4a@'
 
@@ -34,6 +39,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'import_export',
     'location',
+
+    'post',
 ]
 
 MIDDLEWARE = [
