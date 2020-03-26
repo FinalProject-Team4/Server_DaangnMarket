@@ -8,6 +8,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('location/', include('location.urls')),
     path('post/', include('post.urls')),
+
 ]
 urlpatterns += static(
     # URL앞부분이 /media/이면
@@ -17,6 +18,7 @@ urlpatterns += static(
 )
 
 if settings.DEBUG:
+    # django-debugtoolbar
     import debug_toolbar
 
     urlpatterns = [
