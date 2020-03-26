@@ -4,7 +4,6 @@ from django.conf.urls.static import static
 
 from config import settings
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('location/', include('location.urls')),
@@ -16,3 +15,10 @@ urlpatterns += static(
     # document_root위치에서 나머지 path에 해당하는 파일을 리턴
     document_root=settings.MEDIA_ROOT,
 )
+
+if settings.DEBUG:
+    import debug_toolbar
+
+    urlpatterns = [
+        path('__debug__/', include(debug_toolbar.urls)),
+    ] + urlpatterns
