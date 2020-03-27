@@ -17,6 +17,7 @@ class PostListSerializer(serializers.ModelSerializer):
             'category',
             'view_count',
             'updated',
+            'price',
             'postimage_set',
         )
 
@@ -35,6 +36,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
             'category',
             'view_count',
             'updated',
+            'price',
             'postimage_set',
         )
 

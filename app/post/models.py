@@ -34,6 +34,15 @@ POST_CHOICES = (
     ('buy', '삽니다'),
 
 )
+STATE_CHOICES = (
+    # 판매중
+    ('sales', '판매중'),
+    # 예약중
+    ('reserve', '예약중'),
+    # 거래완료
+    ('end', '거래완료'),
+
+)
 
 
 class Post(models.Model):
@@ -48,8 +57,10 @@ class Post(models.Model):
     # 거래지역
     locate = models.ForeignKey(Locate, on_delete=models.CASCADE)
     # 보여질 지역
-    # close_locate = models.ManyToManyField(Locate)
+    showed_locate = models.ManyToManyField(Locate)
     view_count = models.IntegerField(default=0)
+    # 상태
+    state = models.CharField(choices=STATE_CHOICES, max_length=10, default='sales')
 
     updated = models.DateTimeField(auto_now_add=True)
     created = models.DateTimeField(auto_now_add=True)
