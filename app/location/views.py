@@ -12,6 +12,23 @@ from location.serializers import LocateSerializer, DongSerializer
 
 
 class LocateListAPI(generics.ListAPIView):
+    '''
+    동 ID값을 기준 거리 범위에 있는 동 리스트
+
+    ---
+    ## /locatoin/locate/
+    ## Parameters
+        - dong_id: 동 ID값
+        - distance: 거리 설정(default:1000)
+    ## 내용
+        - id: 동 ID 값
+        - dong: 동 이름
+        - gu: 구 이름
+        - longitude: 경도 값
+        - latitude: 위도 값
+        - address: 도로명 주소
+        - distance: 검색한 동과의 거리 값
+    '''
     serializer_class = LocateSerializer
 
     def get_queryset(self):
@@ -31,6 +48,21 @@ class LocateListAPI(generics.ListAPIView):
 
 
 class SearchLocateAPI(generics.ListAPIView):
+    '''
+    동 검색
+
+    ---
+    ## /location/locate/
+    ## Parameters
+        - dong_name: 동 이름
+    ## 내용
+        - id: 동 ID 값
+        - dong: 동 이름
+        - gu: 구 이름
+        - longitude: 경도 값
+        - latitude: 위도 값
+        - address: 도로명 주소
+    '''
     serializer_class = DongSerializer
 
     def get_queryset(self):
@@ -41,6 +73,24 @@ class SearchLocateAPI(generics.ListAPIView):
 
 
 class GPSLocateAPI(generics.ListAPIView):
+    '''
+    동 위도, 경도 값을 기준 거리 범위에 있는 동 리스트
+
+    ---
+    ## /locatoin/locate/gps/
+    ## Parameters
+        - longtitude: 위도 값
+        - latitude: 경도 값
+        - distance: 거리 설정(default:1000)
+    ## 내용
+        - id: 동 ID 값
+        - dong: 동 이름
+        - gu: 구 이름
+        - longitude: 경도 값
+        - latitude: 위도 값
+        - address: 도로명 주소
+        - distance: 검색한 동과의 거리 값
+    '''
     serializer_class = LocateSerializer
 
     def get_queryset(self):
@@ -54,4 +104,3 @@ class GPSLocateAPI(generics.ListAPIView):
         ).annotate(distance=Distance(pnt, 'latlng')).order_by('distance')
 
         return locates
-

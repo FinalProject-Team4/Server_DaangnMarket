@@ -102,6 +102,24 @@ class ApiPostListWithCate(ListAPIView):
 
 # post detail
 class ApiPostDetail(RetrieveAPIView):
+    '''
+    post
+
+    ---
+    ## /post/detail/
+    ## Parameters
+        - post_id: 상세정보를 볼 post id값
+    ## 내용
+        - username: 작성자
+        - title: 게시글 제목
+        - content: 게시글 내용
+        - category: 상품 분류
+        - view_count: 조회수
+        - updated: 수정일
+        - postimage_set: 게시글에 있는 사진
+            - photo: 사진 파일 url
+            - post: 사진이 속해있는 게시판
+    '''
     serializer_class = PostDetailSerializer
 
     def get_object(self):
@@ -114,8 +132,19 @@ class ApiPostDetail(RetrieveAPIView):
         return obj
 
 
-# posting
 class ApiPostCreate(CreateAPIView):
+    '''
+    post 생성
+
+    ---
+    ## /post/create/
+    ## 내용
+        - title: 게시글 제목
+        - content: 게시글 내용
+        - category: 판매 상품 카테고리 분류
+        - price: 판매 가격
+        - locate: 게시글 게시 지역
+    '''
     serializer_class = PostingSerializer
 
     def create(self, request, *args, **kwargs):
@@ -132,6 +161,15 @@ class ApiPostCreate(CreateAPIView):
 
 # post image upload
 class ApiPostImageUpload(CreateAPIView):
+    '''
+    post 이미지 업로드
+
+    ---
+    ## /post/image/upload/
+    ## 내용
+        - post_id: 게시글 id
+        - photos: 사진 이미지들
+    '''
     serializer_class = PostImageCreateSerializer
     parser_classes = (MultiPartParser, JSONParser)
 
