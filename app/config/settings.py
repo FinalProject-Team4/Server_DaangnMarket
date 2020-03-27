@@ -27,13 +27,13 @@ with open(SECRET_FILE) as json_file:
     SENTRY_DSN = data['SENTRY_DSN']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*', ]
 
 # Application definition
 
-INSTALLED_APPS = [
+DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,11 +42,18 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'rest_framework',
-    'import_export',
-    'location',
 
+]
+THIRD_PARTY_APPS = [
+    'import_export',
+    'drf_yasg',
+]
+PROJECT_APPS = [
+    'location',
     'post',
 ]
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

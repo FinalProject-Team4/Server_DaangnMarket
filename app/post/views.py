@@ -13,16 +13,48 @@ from post.serializers import PostImageCreateSerializer, PostListSerializer, Post
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, get_object_or_404
 
 
-# post 목록
 class ApiPostList(ListAPIView):
+    '''
+    post 목록 조회
+
+    ---
+    ## /post/list/
+    ## 내용
+        - username: 작성자
+        - title: 게시글 제목
+        - content: 게시글 내용
+        - category: 상품 분류
+        - view_count: 조회수
+        - updated: 수정일
+        - postimage_set: 게시글에 있는 사진
+            - photo: 사진 파일 url
+            - post: 사진이 속해있는 게시판
+    '''
     serializer_class = PostListSerializer
 
     def get_queryset(self):
         return Post.objects.all().order_by('-created')
 
 
-# 위치
 class ApiPostListWithGPS(ListAPIView):
+    '''
+    특정 지역의  post 목록 조회
+
+    ---
+    ## /post/list/gps/
+    ## Parameters
+        - locate: 동 id
+    ## 내용
+        - username: 작성자
+        - title: 게시글 제목
+        - content: 게시글 내용
+        - category: 상품 분류
+        - view_count: 조회수
+        - updated: 수정일
+        - postimage_set: 게시글에 있는 사진
+            - photo: 사진 파일 url
+            - post: 사진이 속해있는 게시판
+    '''
     serializer_class = PostListSerializer
 
     def get_queryset(self):
@@ -38,8 +70,25 @@ class ApiPostListWithGPS(ListAPIView):
         return objs
 
 
-# 카테고리
 class ApiPostListWithCate(ListAPIView):
+    '''
+    특정 카테고리의 Post 목록
+
+    ---
+    ## /post/list/category/
+    ## Parameters
+     - category: 분류 이름(ex ditital)
+    ## 내용
+        - username: 작성자
+        - title: 게시글 제목
+        - content: 게시글 내용
+        - category: 상품 분류
+        - view_count: 조회수
+        - updated: 수정일
+        - postimage_set: 게시글에 있는 사진
+            - photo: 사진 파일 url
+            - post: 사진이 속해있는 게시판
+    '''
     serializer_class = PostListSerializer
 
     def get_queryset(self):
@@ -77,6 +126,7 @@ class ApiPostCreate(CreateAPIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 # post edit
 
 
@@ -102,8 +152,3 @@ class ApiPostImageUpload(CreateAPIView):
 
         result = {'photos': photo_result}
         return Response(result, status=status.HTTP_201_CREATED)
-
-
-
-
-
