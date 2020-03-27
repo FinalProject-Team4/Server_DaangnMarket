@@ -1,154 +1,118 @@
-import os
+#!/usr/bin/env python
 import json
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
+import os
+import subprocess
+from pathlib import Path
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 
-# aad/.media
-# User-uploaded static files의 기본 경로
-MEDIA_ROOT = os.path.join(ROOT_DIR, '.media')
-MEDIA_URL = '/media/'
+HOME = str(Path.home())
+PROJECT_NAME = 'daangn-market'
+PROJECT_DIR = os.path.dirname(ROOT_DIR)
+PROJECT_DIR = os.path.join(PROJECT_DIR, PROJECT_NAME, 'Server_DaangnMarket_Fork')
+SECRETS_FILE = os.path.join(PROJECT_DIR, 'secrets.json')
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '946wit_ka_)bsr412&@6xn6hkql6e=y($xm&830i!l6_!4w4a@'
+USER = 'ubuntu'
+HOST = json.load(open(SECRETS_FILE))['HOST']
+TARGET = f'{USER}@{HOST}'
+EC2_CERT = os.path.join(HOME, '.ssh', f'daangnMarket.pem')
 
-SECRET_FILE = os.path.join(ROOT_DIR, 'secrets.json')
-
-with open(SECRET_FILE) as json_file:
-    data = json.load(json_file)
-    # database
-    DB_NAME = data['DB_NAME']
-    DB_USER = data['DB_USER']
-    DB_PASSWORD = data['DB_PASSWORD']
-    DB_HOST = data['DB_HOST']
-    # sentry
-    SENTRY_DSN = data['SENTRY_DSN']
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ['*', ]
-
-# Application definition
-
-DJANGO_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django.contrib.gis',
-    'rest_framework',
-
-]
-THIRD_PARTY_APPS = [
-    'import_export',
-    'drf_yasg',
-]
-PROJECT_APPS = [
-    'location',
-    'post',
+DOCKER_IMAGE = f'newjam/{PROJECT_NAME}'
+DOCKER_IMAGE_TAG = 'test'
+DOCKER_OPTS = [
+    ('--rm', ''),
+    ('-t', ''),
+    ('-d', ''),
+    ('-p', '80:80'),
+    # ('-p', '443:443'),
+    # ('-v', '/etc/letsencrypt:/etc/letsencrypt'),
+    ('--name', PROJECT_NAME),
 ]
 
-INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 
-MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
+# LOCAL bash command
+def run(cmd, check_error=False):
+    subprocess.run(cmd, shell=True, check=check_error)
 
-ROOT_URLCONF = 'config.urls'
 
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
-]
+# EC2 bash command
+def ssh_run(cmd, check_error=True, host_key_check=False):
+    strict_host_key_check = f'-o StrictHostKeyChecking=no' if not host_key_check else ''
+    run(f'ssh {strict_host_key_check} -i {EC2_CERT} {TARGET} -C {cmd}', check_error)
 
-WSGI_APPLICATION = 'config.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': DB_NAME,
-        'USER': DB_USER,
-        'PASSWORD': DB_PASSWORD,
-        'HOST': DB_HOST,
-        'PORT': 5432,
-    },
-}
+# Docker Container command
+def docker_run(cmd, container=PROJECT_NAME, daemon=False, check_error=True, host_key_check=False):
+    ssh_run(f'\' sudo docker exec {"-d" if daemon else ""} {container} {cmd} \'', check_error, host_key_check)
 
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
 
-# Internationalization
+# docker build, push from LOCAL
+def local_build_push():
+    run(f'poetry export -f requirements.txt > requirements.txt')
+    run(f'docker build -q -t {DOCKER_IMAGE}:{DOCKER_IMAGE_TAG} .')
+    run(f'docker push {DOCKER_IMAGE}:{DOCKER_IMAGE_TAG} | grep -e push -e digest')
 
-LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Asia/Seoul'
+# server init from EC2
+def server_init():
+    ssh_run(f'sudo apt-get update -y > /dev/null')
+    ssh_run(f'sudo DEBIAN_FRONTEND=noninteractive apt-get dist-upgrade -y > /dev/null')
+    ssh_run(f'sudo apt-get install docker.io -y -qq')
 
-USE_I18N = True
 
-USE_L10N = True
+# docker server run from EC2 : docker pull, run
+def server_run():
+    ssh_run(f'sudo docker stop {PROJECT_NAME}', check_error=False)
+    ssh_run(f'sudo docker pull {DOCKER_IMAGE}:{DOCKER_IMAGE_TAG} | grep -e "Pulling from" -e Digest -e Status')
+    ssh_run('sudo docker run {options} {img}:{tag}'.format(
+        options=' '.join([
+            f'{key} {value}' for key, value in DOCKER_OPTS
+        ]),
+        img=DOCKER_IMAGE,
+        tag=DOCKER_IMAGE_TAG,
+    ))
 
-USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
+# copy secrets from LOCAL: local to EC2, EC2 to docker
+def copy_secrets():
+    run(f'scp -i {EC2_CERT} {SECRETS_FILE} {TARGET}:/tmp')
+    # run(f'scp -i {EC2_CERT} -r .cert {TARGET}:/tmp/.cert')
+    ssh_run(f'sudo docker cp /tmp/secrets.json {PROJECT_NAME}:/srv/{PROJECT_NAME}')
+    # ssh_run(f'sudo docker cp -a /tmp/.cert {PROJECT_NAME}:/srv/{PROJECT_NAME}/.cert')
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(ROOT_DIR, 'staticfiles')
 
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+# set prerequisites from docker CONTAINER
+def server_setting():
+    # stop nginx
+    docker_run(f'/usr/sbin/nginx -s stop', check_error=False)
 
-# django-debug-toolbar
-INTERNAL_IPS = [
-    '127.0.0.1',
-]
+    # collect static files
+    docker_run(f'python manage.py collectstatic --noinput')
 
-INSTALLED_APPS += [
-    'debug_toolbar',
-]
+    # database migrate
+    # docker_run(f'python manage.py migrate > /dev/null')
 
-MIDDLEWARE += [
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-]
+    # start supervisor
+    docker_run(f'supervisord -c /srv/daangn-market/.config/supervisord.conf -n', daemon=True)
 
-# Sentry
-sentry_sdk.init(
-    dsn=SENTRY_DSN,
-    integrations=[DjangoIntegration()],
 
-    # If you wish to associate users to errors (assuming you are using
-    # django.contrib.auth) you may enable sending PII data.
-    send_default_pii=True
-)
+if __name__ == '__main__':
+    try:
+        print(">>>>> local_build_push()")
+        local_build_push()
+        print(">>>>> server_init()")
+        server_init()
+        print(">>>>> server_run()")
+        server_run()
+        print(">>>>> copy_secretes()")
+        copy_secrets()
+        print(">>>>> server_setting()")
+        server_setting()
+    except subprocess.CalledProcessError as e:
+        print('deploy.py Error!')
+        print(' cmd:', e.cmd)
+        print(' returncode:', e.returncode)
+        print(' output:', e.output)
+        print(' stdout:', e.stdout)
+        print(' stderr:', e.stderr)
