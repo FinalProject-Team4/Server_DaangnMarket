@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.db.models import Q
 from django.shortcuts import render
 from django.utils.datastructures import MultiValueDict
 from rest_framework import status
@@ -11,8 +12,9 @@ from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, JSONParser
 
 from location.models import Locate
-from post.models import Post
-from post.serializers import PostImageCreateSerializer, PostListSerializer, PostDetailSerializer, PostingSerializer
+from post.models import Post, RecommendWord
+from post.serializers import PostImageCreateSerializer, PostListSerializer, PostDetailSerializer, PostingSerializer, \
+    RecommendWordSerializer
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, get_object_or_404
 
 
@@ -48,9 +50,11 @@ class ApiPostListWithCate(ListAPIView):
     def get_queryset(self):
         try:
             category = self.request.query_params.get('category')
+            locate_id = self.request.query_params.get('locate')
+            locate = Locate.objects.get(id=locate_id)
         except:
             raise ValidationError(status=status.HTTP_400_BAD_REQUEST)
-        objs = Post.objects.filter(category=category).order_by('-created')
+        objs = Post.objects.filter(category=category, showed_locate=locate).order_by('-created')
         return objs
 
 
@@ -116,6 +120,7 @@ class ApiPostCreateLocate(CreateAPIView):
 # post edit
 
 
+
 # post image upload
 class ApiPostImageUpload(CreateAPIView):
     serializer_class = PostImageCreateSerializer
@@ -140,6 +145,30 @@ class ApiPostImageUpload(CreateAPIView):
         return Response(result, status=status.HTTP_201_CREATED)
 
 
+class ApiSearch(ListAPIView):
+    serializer_class = PostListSerializer
+
+    def get_queryset(self):
+        word = self.request.query_params.get('word')
+        txt_list = word.split()
+        for txt in txt_list:
+            print('txt : ', txt)
+            w = RecommendWord.objects.get_or_create(content=txt)
+            w.count = w.count + 1
+            w.save()
+        post_list = Post.objects.filter(
+            Q(title__icontains=word) |
+            Q(content__icontains=word)
+        ).distinct().order_by('-created')
+        return post_list
+
+
+class ApiRecommendWord(ListAPIView):
+    serializer_class = RecommendWordSerializer
+
+    def get_queryset(self):
+        words = RecommendWord.objects.all().order_by('count')[:10]
+        return words
 
 
 

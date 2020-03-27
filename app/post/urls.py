@@ -11,4 +11,7 @@ urlpatterns = [
     path('create/', views.ApiPostCreate.as_view()),
     path('create/locate/', views.ApiPostCreateLocate.as_view()),
     path('image/upload/', views.ApiPostImageUpload.as_view()),
+
+    # 검색
+    path('search/', views.ApiSearch.as_view()),
 ]

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from post.models import Post, PostImage
+from post.models import Post, PostImage, RecommendWord
 
 
 class PostListSerializer(serializers.ModelSerializer):
@@ -20,6 +20,7 @@ class PostListSerializer(serializers.ModelSerializer):
             'updated',
             'address',
             'price',
+            'state',
             'postimage_set',
         )
 
@@ -41,6 +42,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
             'updated',
             'address',
             'price',
+            'state',
             'postimage_set',
         )
 
@@ -57,3 +59,11 @@ class PostImageCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostImage
         fields = ['photo', 'post']
+
+
+class RecommendWordSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = RecommendWord
+        fields = ['content']
+
