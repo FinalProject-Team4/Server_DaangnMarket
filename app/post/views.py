@@ -1,8 +1,11 @@
 from django.contrib.auth.models import User
 from django.shortcuts import render
+from django.utils.datastructures import MultiValueDict
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
+from django.contrib.gis.db.models.functions import Distance
 
+from django.contrib.gis.measure import D
 from rest_framework.response import Response
 
 from rest_framework.parsers import MultiPartParser, JSONParser
@@ -34,7 +37,7 @@ class ApiPostListWithGPS(ListAPIView):
         except:
             raise ValidationError(['HTTP_400_BAD_REQUEST'])
 
-        objs = Post.objects.filter(locate=locate).order_by('-created')
+        objs = Post.objects.filter(showed_locate=locate).order_by('-created')
         return objs
 
 
@@ -70,12 +73,45 @@ class ApiPostCreate(CreateAPIView):
     serializer_class = PostingSerializer
 
     def create(self, request, *args, **kwargs):
+        print(request.data)
         serializer = self.get_serializer(data=request.data)
         user = User.objects.get(username='admin')
         if serializer.is_valid():
             serializer.save(author=user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ApiPostCreateLocate(CreateAPIView):
+    serializer_class = PostingSerializer
+
+    def create(self, request, *args, **kwargs):
+        locate_id = request.data.get('locate')
+        distance = request.data.get('distance', 1000)
+        data = request.data.copy()
+
+        try:
+            dong = Locate.objects.get(id=locate_id)
+        except Locate.DoesNotExist:
+            print('Locate.DoesNotExist')
+            raise ValidationError(['There are no dong_id'])
+
+        pnt = dong.latlng
+        locates = Locate.objects.filter(
+            latlng__distance_lt=(pnt, D(m=distance)),
+        ).annotate(distance=Distance(pnt, 'latlng')).order_by('distance')
+        showed_locate = []
+        for locate in locates:
+            showed_locate.append(f'{locate.id}')
+        data.update(MultiValueDict({'showed_locate': showed_locate}))
+
+        serializer = self.get_serializer(data=data)
+        user = User.objects.get(username='admin')
+        if serializer.is_valid():
+            serializer.save(author=user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 # post edit
 

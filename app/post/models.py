@@ -57,7 +57,7 @@ class Post(models.Model):
     # 거래지역
     locate = models.ForeignKey(Locate, on_delete=models.CASCADE)
     # 보여질 지역
-    showed_locate = models.ManyToManyField(Locate)
+    showed_locate = models.ManyToManyField(Locate, related_name='showed_locate')
     view_count = models.IntegerField(default=0)
     # 상태
     state = models.CharField(choices=STATE_CHOICES, max_length=10, default='sales')
