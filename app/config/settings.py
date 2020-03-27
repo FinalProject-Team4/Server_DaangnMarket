@@ -1,5 +1,7 @@
 import os
 import json
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT_DIR = os.path.dirname(BASE_DIR)
@@ -16,10 +18,13 @@ SECRET_FILE = os.path.join(ROOT_DIR, 'secrets.json')
 
 with open(SECRET_FILE) as json_file:
     data = json.load(json_file)
+    # database
     DB_NAME = data['DB_NAME']
     DB_USER = data['DB_USER']
     DB_PASSWORD = data['DB_PASSWORD']
     DB_HOST = data['DB_HOST']
+    # sentry
+    SENTRY_DSN = data['SENTRY_DSN']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -28,7 +33,7 @@ ALLOWED_HOSTS = ['*', ]
 
 # Application definition
 
-INSTALLED_APPS = [
+DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -37,11 +42,18 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'rest_framework',
-    'import_export',
-    'location',
 
+]
+THIRD_PARTY_APPS = [
+    'import_export',
+    'drf_yasg',
+]
+PROJECT_APPS = [
+    'location',
     'post',
 ]
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -118,9 +130,25 @@ STATIC_ROOT = os.path.join(ROOT_DIR, 'staticfiles')
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
+# django-debug-toolbar
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
 
-REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10,
-}
+INSTALLED_APPS += [
+    'debug_toolbar',
+]
 
+MIDDLEWARE += [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+]
+
+# Sentry
+sentry_sdk.init(
+    dsn=SENTRY_DSN,
+    integrations=[DjangoIntegration()],
+
+    # If you wish to associate users to errors (assuming you are using
+    # django.contrib.auth) you may enable sending PII data.
+    send_default_pii=True
+)
