@@ -1,5 +1,7 @@
 import os
 import json
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT_DIR = os.path.dirname(BASE_DIR)
@@ -16,13 +18,16 @@ SECRET_FILE = os.path.join(ROOT_DIR, 'secrets.json')
 
 with open(SECRET_FILE) as json_file:
     data = json.load(json_file)
+    # database
     DB_NAME = data['DB_NAME']
     DB_USER = data['DB_USER']
     DB_PASSWORD = data['DB_PASSWORD']
     DB_HOST = data['DB_HOST']
+    # sentry
+    SENTRY_DSN = data['SENTRY_DSN']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*', ]
 
@@ -118,7 +123,6 @@ STATIC_ROOT = os.path.join(ROOT_DIR, 'staticfiles')
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
-
 # django-debug-toolbar
 INTERNAL_IPS = [
     '127.0.0.1',
@@ -131,3 +135,18 @@ INSTALLED_APPS += [
 MIDDLEWARE += [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
+
+# Sentry
+sentry_sdk.init(
+    dsn=SENTRY_DSN,
+    integrations=[DjangoIntegration()],
+
+    # If you wish to associate users to errors (assuming you are using
+    # django.contrib.auth) you may enable sending PII data.
+    send_default_pii=True
+)
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+}
