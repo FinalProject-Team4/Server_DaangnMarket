@@ -4,9 +4,13 @@ import os
 import subprocess
 from pathlib import Path
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT_DIR = os.path.dirname(BASE_DIR)
+
 HOME = str(Path.home())
 PROJECT_NAME = 'daangn-market'
-PROJECT_DIR = os.path.join(HOME, 'Desktop', PROJECT_NAME, 'Server_DaangnMarket_Fork')
+PROJECT_DIR = os.path.dirname(ROOT_DIR)
+PROJECT_DIR = os.path.join(ROOT_DIR, PROJECT_NAME, 'Server_DaangnMarket_Fork')
 SECRETS_FILE = os.path.join(PROJECT_DIR, 'secrets.json')
 
 USER = 'ubuntu'
