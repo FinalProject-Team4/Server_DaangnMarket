@@ -19,7 +19,7 @@ from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView,
 
 
 class ApiPostList(ListAPIView):
-    '''
+    """
     post 목록 조회
 
     ---
@@ -34,7 +34,7 @@ class ApiPostList(ListAPIView):
         - postimage_set: 게시글에 있는 사진
             - photo: 사진 파일 url
             - post: 사진이 속해있는 게시판
-    '''
+    """
     serializer_class = PostListSerializer
 
     def get_queryset(self):
@@ -42,7 +42,7 @@ class ApiPostList(ListAPIView):
 
 
 class ApiPostListWithGPS(ListAPIView):
-    '''
+    """
     특정 지역의  post 목록 조회
 
     ---
@@ -59,7 +59,7 @@ class ApiPostListWithGPS(ListAPIView):
         - postimage_set: 게시글에 있는 사진
             - photo: 사진 파일 url
             - post: 사진이 속해있는 게시판
-    '''
+    """
     serializer_class = PostListSerializer
 
     def get_queryset(self):
@@ -76,7 +76,7 @@ class ApiPostListWithGPS(ListAPIView):
 
 
 class ApiPostListWithCate(ListAPIView):
-    '''
+    """
     특정 카테고리의 Post 목록
 
     ---
@@ -93,7 +93,7 @@ class ApiPostListWithCate(ListAPIView):
         - postimage_set: 게시글에 있는 사진
             - photo: 사진 파일 url
             - post: 사진이 속해있는 게시판
-    '''
+    """
     serializer_class = PostListSerializer
 
     def get_queryset(self):
@@ -109,7 +109,7 @@ class ApiPostListWithCate(ListAPIView):
 
 # post detail
 class ApiPostDetail(RetrieveAPIView):
-    '''
+    """
     post
 
     ---
@@ -126,7 +126,7 @@ class ApiPostDetail(RetrieveAPIView):
         - postimage_set: 게시글에 있는 사진
             - photo: 사진 파일 url
             - post: 사진이 속해있는 게시판
-    '''
+    """
     serializer_class = PostDetailSerializer
 
     def get_object(self):
@@ -200,7 +200,7 @@ class ApiPostCreateLocate(CreateAPIView):
 
 # post image upload
 class ApiPostImageUpload(CreateAPIView):
-    '''
+    """
     post 이미지 업로드
 
     ---
@@ -208,7 +208,7 @@ class ApiPostImageUpload(CreateAPIView):
     ## 내용
         - post_id: 게시글 id
         - photos: 사진 이미지들
-    '''
+    """
     serializer_class = PostImageCreateSerializer
     parser_classes = (MultiPartParser, JSONParser)
 
@@ -238,7 +238,6 @@ class ApiSearch(ListAPIView):
         word = self.request.query_params.get('word')
         txt_list = word.split()
         for txt in txt_list:
-            print('txt : ', txt)
             w = RecommendWord.objects.get_or_create(content=txt)
             w.count = w.count + 1
             w.save()
