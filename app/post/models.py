@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+from config.settings import AUTH_USER_MODEL as User
 from django.db import models
 
 from location.models import Locate
