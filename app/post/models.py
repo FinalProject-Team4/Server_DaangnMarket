@@ -34,6 +34,14 @@ POST_CHOICES = (
     ('buy', '삽니다'),
 
 )
+STATE_CHOICES = (
+    # 판매중
+    ('sales', '판매중'),
+    # 예약중
+    ('reserve', '예약중'),
+    # 거래완료
+    ('end', '거래완료'),
+)
 
 
 class Post(models.Model):
@@ -48,8 +56,10 @@ class Post(models.Model):
     # 거래지역
     locate = models.ForeignKey(Locate, on_delete=models.CASCADE)
     # 보여질 지역
-    # close_locate = models.ManyToManyField(Locate)
+    showed_locate = models.ManyToManyField(Locate, related_name='showed_locate')
     view_count = models.IntegerField(default=0)
+    # 상태
+    state = models.CharField(choices=STATE_CHOICES, max_length=10, default='sales')
 
     updated = models.DateTimeField(auto_now_add=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -78,7 +88,42 @@ class PostImage(models.Model):
         return self.photo.name
 
 
+# 관심
+class PostLike(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = '관심'
+        verbose_name_plural = '%s 목록' % verbose_name
+
+    def __str__(self):
+        return f'{self.user.id}가 {self.post.name} 을 좋아합니다.'
 
 
+'''
+# 리뷰
+class PostReview(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    buyer = models.ForeignKey(User, on_delete=models.CASCADE)
+    seller = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = '리뷰'
+        verbose_name_plural = '%s 목록' % verbose_name
+'''
+
+
+# 검색어
+class RecommendWord(models.Model):
+    content = models.CharField(max_length=100)
+    count = models.IntegerField(default=0)
+
+    class Meta:
+        verbose_name = '추천 검색어'
+        verbose_name_plural = '%s 목록' % verbose_name
+
+    def __str__(self):
+        return f'{self.content} 가 {self.count}번 검색되었습니다.'
 
 

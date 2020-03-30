@@ -5,8 +5,8 @@ from post.models import Post, PostImage
 
 
 @admin.register(Post)
-class StoreAdmin(ImportExportMixin, admin.ModelAdmin):
-    pass
+class PostAdmin(ImportExportMixin, admin.ModelAdmin):
+    filter_horizontal = ('showed_locate',)
 
 
 @admin.register(PostImage)
