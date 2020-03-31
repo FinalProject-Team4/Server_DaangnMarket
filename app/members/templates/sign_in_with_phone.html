@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+    <!-- Add two inputs for "phoneNumber" and "code" -->
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon1"><i class="fas fa-phone"></i></span>
+        </div>
+        <input id="phoneNumber" type="tel" class="form-control" placeholder="+821012345678">
+        <button id="sign-in-button" type="button" class="btn btn-secondary" onclick="submitPhoneNumberAuth()">
+            SIGN IN WITH PHONE
+        </button>
+    </div>
+
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon1"><i class="fas fa-phone"></i></span>
+        </div>
+        <input id="code" type="text" class="form-control" placeholder="123456">
+        <button id="confirm-code" type="button" class="btn btn-secondary" onclick="submitPhoneNumberAuthCode()">
+            ENTER CODE
+        </button>
+    </div>
+
+    <!-- Add a container for reCaptcha -->
+    <div id="recaptcha-container"></div>
+
+    <script>
+        function submitPhoneNumberAuth() {
+            console.log("submitPhoneNumberAuth");
+            var phoneNumber = document.getElementById("phoneNumber").value;
+            var appVerifier = new firebase.auth.RecaptchaVerifier(
+                "sign-in-button",
+                {
+                    size: "invisible"
+                }
+            );
+            firebase
+                .auth()
+                .signInWithPhoneNumber(phoneNumber, appVerifier)
+                .then(function (confirmationResult) {
+                    window.confirmationResult = confirmationResult;
+                })
+                .catch(function (error) {
+                    console.log("#error " + error);
+                });
+        }
+
+        function submitPhoneNumberAuthCode() {
+            console.log("submitPhoneNumberAuthCode");
+            var code = document.getElementById("code").value;
+            confirmationResult
+                .confirm(code)
+                .then(function (result) {
+                    var user = result.user;
+                    console.log(">>>>> CODE VERIFIED <<<<<");
+                    return user.getIdToken()
+                })
+                .then(() => {
+                    window.location.assign('/members/signup');
+                })
+                .catch(error => console.log("!! firebase error : " + error))
+
+        }
+
+        firebase.auth().onAuthStateChanged(function (user) {
+            if (user) {
+                console.log("USER LOGGED IN");
+                user.providerData.forEach(function (profile) {
+                    console.log("Sign-in provider: " + profile.providerId);
+                    console.log("  Provider-specific UID: " + profile.uid);
+                    console.log("  Name: " + profile.displayName);
+                    console.log("  Email: " + profile.email);
+                    console.log("  Photo URL: " + profile.photoURL);
+                });
+            } else {
+                console.log("USER NOT LOGGED IN");
+            }
+        });
+    </script>
+
+
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <form id="myForm">
+        <div class="form-group">
+            <label for="exampleFormControlFile1">Profile Image</label>
+            <input type="file" class="form-control-file" id="avatar" name="avatar" disabled>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputEmail1">User name</label>
+            <input type="text" class="form-control" id="username" name="username" aria-describedby="emailHelp">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+    <script>
+
+        var form = document.getElementById("myForm");
+
+        form.addEventListener('submit', SubmitForm);
+
+        function SubmitForm(event) {
+            event.preventDefault();
+            var user = firebase.auth().currentUser;
+            user.getIdToken()
+                .then((idToken) => {
+                    var data = {
+                        'idToken': idToken,
+                        'username': document.getElementById("username").value
+                    };
+                    fetch(`http://localhost:8000/members/entry/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data),
+                    })
+                        .then(res => res.json())
+                        .then(response => console.log('Success:', JSON.stringify(response)))
+                        .catch(error => console.error('Error:', error));
+                })
+                /*
+                .then(() => {
+                    return firebase.auth().signOut();
+                })
+                 */
+                .catch(error => console.log("!! server errror : " + error))
+        }
+    </script>
+
+{% endblock %}

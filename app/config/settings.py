@@ -27,11 +27,16 @@ with open(SECRET_FILE) as json_file:
     SENTRY_DSN = data['SENTRY_DSN']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*', ]
 
 # Application definition
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ]
+}
 
 DJANGO_APPS = [
     'django.contrib.admin',
@@ -41,8 +46,9 @@ DJANGO_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
+    # DRF
     'rest_framework',
-
+    'rest_framework.authtoken',
 ]
 THIRD_PARTY_APPS = [
     'import_export',
@@ -51,6 +57,7 @@ THIRD_PARTY_APPS = [
 PROJECT_APPS = [
     'location',
     'post',
+    'members',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
@@ -86,15 +93,23 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.contrib.gis.db.backends.postgis',
+    #     'NAME': DB_NAME,
+    #     'USER': DB_USER,
+    #     'PASSWORD': DB_PASSWORD,
+    #     'HOST': DB_HOST,
+    #     'PORT': 5432,
+    # },
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': DB_NAME,
-        'USER': DB_USER,
-        'PASSWORD': DB_PASSWORD,
-        'HOST': DB_HOST,
-        'PORT': 5432,
+        'NAME': 'db.postgis',
+        'HOST': 'localhost',
+        'USER': 'jam',
     },
 }
+
+AUTH_USER_MODEL = 'members.User'
 
 AUTH_PASSWORD_VALIDATORS = [
     {

@@ -8,6 +8,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('location/', include('location.urls')),
     path('post/', include('post.urls')),
+    path('members/', include('members.urls')),
 
     # drf-yasg
     path('swagger<str:format>', schema_view.without_ui(cache_timeout=0), name='schema-json'),
