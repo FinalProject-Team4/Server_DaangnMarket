@@ -76,9 +76,14 @@ def server_run():
 
 # copy secrets from LOCAL: local to EC2, EC2 to docker
 def copy_secrets():
+    # secrets.json
     run(f'scp -i {EC2_CERT} {SECRETS_FILE} {TARGET}:/tmp')
-    # run(f'scp -i {EC2_CERT} -r .cert {TARGET}:/tmp/.cert')
     ssh_run(f'sudo docker cp /tmp/secrets.json {PROJECT_NAME}:/srv/{PROJECT_NAME}')
+    # serviceAccountKey.json
+    run(f'scp -i {EC2_CERT} serviceAccountKey.json {TARGET}:/tmp')
+    ssh_run(f'sudo docker cp /tmp/serviceAccountKey.json {PROJECT_NAME}:/srv/{PROJECT_NAME}')
+    # HTTPS
+    # run(f'scp -i {EC2_CERT} -r .cert {TARGET}:/tmp/.cert')
     # ssh_run(f'sudo docker cp -a /tmp/.cert {PROJECT_NAME}:/srv/{PROJECT_NAME}/.cert')
 
 

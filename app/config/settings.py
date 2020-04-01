@@ -27,7 +27,7 @@ with open(SECRET_FILE) as json_file:
     SENTRY_DSN = data['SENTRY_DSN']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*', ]
 
@@ -55,9 +55,10 @@ THIRD_PARTY_APPS = [
     'drf_yasg',
 ]
 PROJECT_APPS = [
-    'location',
-    'post',
-    'members',
+    'core.apps.CoreConfig',
+    'location.apps.LocationConfig',
+    'post.apps.PostConfig',
+    'members.apps.MembersConfig',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
@@ -103,7 +104,7 @@ DATABASES = {
     # },
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'db.postgis',
+        'NAME': 'db.daangn',
         'HOST': 'localhost',
         'USER': 'jam',
     },
