@@ -1,7 +1,8 @@
-from config.settings import AUTH_USER_MODEL as User
+
 from django.db import models
 
 from location.models import Locate
+from members.models import User
 
 POST_CHOICES = (
     # 디지털/가전
