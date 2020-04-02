@@ -7,5 +7,5 @@ urlpatterns = [
     path("front/", entry_view, name="front"),
     path("signup/", signup_view, name="signup"),
     # API
-    path("entry/", Entry.as_view(), name="entry"),
+    path("entry/", FirebaseLogin.as_view(), name="entry"),
 ]

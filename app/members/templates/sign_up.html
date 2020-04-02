@@ -28,8 +28,9 @@
                         'idToken': idToken,
                         'username': document.getElementById("username").value
                     };
-                    fetch(`http://localhost:8000/members/entry/`, {
+                    fetch(`/members/entry/`, {
                         method: 'POST',
+                        mode: 'cors',
                         headers: {
                             'Content-Type': 'application/json',
                         },
@@ -37,13 +38,11 @@
                     })
                         .then(res => res.json())
                         .then(response => console.log('Success:', JSON.stringify(response)))
-                        .catch(error => console.error('Error:', error));
+                        .catch(error => console.error('Error:' + error));
                 })
-                /*
                 .then(() => {
                     return firebase.auth().signOut();
                 })
-                 */
                 .catch(error => console.log("!! server errror : " + error))
         }
     </script>

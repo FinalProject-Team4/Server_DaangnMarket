@@ -63,25 +63,27 @@
                     var data = {
                         "idToken": idToken
                     };
-                    return fetch(`http://localhost:8000/members/entry/`, {
+                    return fetch(`/members/entry/`, {
                         method: 'POST',
+                        mode: 'cors',
                         headers: {
+                            'Accept': 'application/json',
                             'Content-Type': 'application/json',
                         },
                         body: JSON.stringify(data),
                     });
-                })
-                .then((res) => {
-                    if (res.status === 401) {
-                        window.location.assign('/members/signup');
-                    } else {
-                        console.log(res.json())
-                    }
-                })
-                .catch((err) => {
-                    window.location.assign('/members/signup');
-                })
 
+                })
+            .then((res) => {
+                if (res.status === 401) {
+                    window.location.assign('/members/signup/');
+                } else {
+                    res.json().then((result)=> console.log(result));
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            })
         }
 
         firebase.auth().onAuthStateChanged(function (user) {
