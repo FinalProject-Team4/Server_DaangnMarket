@@ -21,6 +21,7 @@ sentry-sdk = "^0.14.3"
 ssv = "^0.1.1"
 flex = "^6.14.1"
 firebase-admin = "^4.0.0"
+django-cors-headers = "^3.2.1"
 
 
 [tool.poetry.dev-dependencies]
