@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User
+
 from django.db.models import Q
 from django.shortcuts import render
 from django.utils.datastructures import MultiValueDict
@@ -12,6 +12,7 @@ from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, JSONParser
 
 from location.models import Locate
+from members.models import User
 from post.models import Post, RecommendWord
 from post.serializers import PostImageCreateSerializer, PostListSerializer, PostDetailSerializer, PostingSerializer, \
     RecommendWordSerializer
