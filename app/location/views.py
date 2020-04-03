@@ -7,6 +7,7 @@ from django.contrib.gis.measure import D
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
+from config.c import LargeResultsSetPagination
 from location.models import Locate
 from location.serializers import LocateSerializer, DongSerializer
 
@@ -29,6 +30,7 @@ class LocateListAPI(generics.ListAPIView):
         - address: 도로명 주소
         - distance: 검색한 동과의 거리 값
     '''
+    pagination_class = LargeResultsSetPagination
     serializer_class = LocateSerializer
 
     def get_queryset(self):
@@ -63,6 +65,7 @@ class SearchLocateAPI(generics.ListAPIView):
         - latitude: 위도 값
         - address: 도로명 주소
     '''
+    pagination_class = LargeResultsSetPagination
     serializer_class = DongSerializer
 
     def get_queryset(self):
@@ -91,6 +94,7 @@ class GPSLocateAPI(generics.ListAPIView):
         - address: 도로명 주소
         - distance: 검색한 동과의 거리 값
     '''
+    pagination_class = LargeResultsSetPagination
     serializer_class = LocateSerializer
 
     def get_queryset(self):

@@ -48,10 +48,11 @@ class PostDetailSerializer(serializers.ModelSerializer):
 
 
 class PostingSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Post
-        fields = ['title', 'content', 'category', 'price', 'locate', 'showed_locate']
+        fields = ['id', 'title', 'content', 'category', 'price', 'locate', 'showed_locate']
 
 
 class PostImageCreateSerializer(serializers.ModelSerializer):
