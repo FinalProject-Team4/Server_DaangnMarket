@@ -4,11 +4,11 @@
     <form id="myForm">
         <div class="form-group">
             <label for="exampleFormControlFile1">Profile Image</label>
-            <input type="file" class="form-control-file" id="avatar" name="avatar" disabled>
+            <input type="file" class="form-control-file" id="avatar" name="avatar">
         </div>
         <div class="form-group">
             <label for="exampleInputEmail1">User name</label>
-            <input type="text" class="form-control" id="username" name="username" aria-describedby="emailHelp">
+            <input type="text" class="form-control" id="username" name="username">
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
@@ -21,24 +21,26 @@
 
         function SubmitForm(event) {
             event.preventDefault();
+
             var user = firebase.auth().currentUser;
             user.getIdToken()
                 .then((idToken) => {
-                    var data = {
-                        'idToken': idToken,
-                        'username': document.getElementById("username").value
-                    };
-                    fetch(`/members/entry/`, {
+                    var data = new FormData();
+                    var image_file = document.getElementById('avatar');
+                    var username = document.getElementById("username").value;
+
+                    data.append('idToken', idToken);
+                    data.append('username', username);
+                    data.append('avatar', image_file.files[0]);
+
+                    fetch(`/members/signup/`, {
                         method: 'POST',
                         mode: 'cors',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(data),
+                        body: data,
                     })
                         .then(res => res.json())
                         .then(response => console.log('Success:', JSON.stringify(response)))
-                        .catch(error => console.error('Error:' + error));
+                        .catch(error => console.log(error));
                 })
                 .then(() => {
                     return firebase.auth().signOut();
