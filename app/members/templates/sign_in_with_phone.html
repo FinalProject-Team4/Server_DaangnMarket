@@ -63,7 +63,7 @@
                     var data = {
                         "idToken": idToken
                     };
-                    return fetch(`/members/entry/`, {
+                    return fetch(`/members/login/`, {
                         method: 'POST',
                         mode: 'cors',
                         headers: {
@@ -76,7 +76,7 @@
                 })
             .then((res) => {
                 if (res.status === 401) {
-                    window.location.assign('/members/signup/');
+                    window.location.assign('/members/front_signup/');
                 } else {
                     res.json().then((result)=> console.log(result));
                 }
