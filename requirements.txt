@@ -30,6 +30,9 @@ diff-match-patch==20181111 \
 django==3.0.4 \
     --hash=sha256:89e451bfbb815280b137e33e454ddd56481fdaa6334054e6e031041ee1eda360 \
     --hash=sha256:50b781f6cbeb98f673aa76ed8e572a019a45e52bdd4ad09001072dfd91ab07c8
+django-cors-headers==3.2.1 \
+    --hash=sha256:a5960addecc04527ab26617e51b8ed42f0adab4594b24bb0f3c33e2bd3857c3f \
+    --hash=sha256:a785b5f446f6635810776d9f5f5d23e6a2a2f728ea982648370afaf0dfdf2627
 django-debug-toolbar==2.2 \
     --hash=sha256:eabbefe89881bbe4ca7c980ff102e3c35c8e8ad6eb725041f538988f2f39a943 \
     --hash=sha256:ff94725e7aae74b133d0599b9bf89bd4eb8f5d2c964106e61d11750228c8774c
