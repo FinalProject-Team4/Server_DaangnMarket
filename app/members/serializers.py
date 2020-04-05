@@ -6,6 +6,7 @@ User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
     avatar = serializers.ImageField(use_url=False, allow_empty_file=True)
+    Authorization = serializers.SerializerMethodField(method_name='get_authorization')
 
     class Meta:
         model = User
@@ -16,4 +17,8 @@ class UserSerializer(serializers.ModelSerializer):
             'created',
             'updated',
             'username',
+            'Authorization',
         ]
+
+    def get_authorization(self, obj):
+        return f'Token {obj.auth_token}'
