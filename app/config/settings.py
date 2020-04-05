@@ -98,20 +98,20 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.contrib.gis.db.backends.postgis',
-    #     'NAME': DB_NAME,
-    #     'USER': DB_USER,
-    #     'PASSWORD': DB_PASSWORD,
-    #     'HOST': DB_HOST,
-    #     'PORT': 5432,
-    # },
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'db.daangn',
-        'USER': 'jam',
-        'HOST': 'localhost',
+        'NAME': DB_NAME,
+        'USER': DB_USER,
+        'PASSWORD': DB_PASSWORD,
+        'HOST': DB_HOST,
+        'PORT': 5432,
     },
+    # 'default': {
+    #     'ENGINE': 'django.contrib.gis.db.backends.postgis',
+    #     'NAME': 'db.daangn',
+    #     'USER': 'jam',
+    #     'HOST': 'localhost',
+    # },
 }
 
 # Cross domain
