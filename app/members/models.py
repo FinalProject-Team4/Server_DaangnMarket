@@ -18,3 +18,4 @@ class User(core_models.TimeStampedModel, AbstractUser):
 
     class Meta:
         verbose_name = '유저'
+        verbose_name_plural = '유저'
