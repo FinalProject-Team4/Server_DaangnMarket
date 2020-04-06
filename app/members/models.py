@@ -15,3 +15,6 @@ class User(core_models.TimeStampedModel, AbstractUser):
     phone = models.CharField(max_length=13)
     # buyer_review =
     # seller_review =app
+
+    class Meta:
+        verbose_name = '유저'

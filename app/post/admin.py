@@ -12,5 +12,3 @@ class PostAdmin(ImportExportMixin, admin.ModelAdmin):
 @admin.register(PostImage)
 class PostImageAdmin(admin.ModelAdmin):
     pass
-
-
