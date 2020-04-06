@@ -4,4 +4,5 @@ from .models import User
 
 @admin.register(User)
 class MembersAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['username', 'phone', 'avatar', 'created', 'updated']
+    list_filter = ['username', 'created', 'updated']
