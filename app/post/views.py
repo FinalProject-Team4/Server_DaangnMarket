@@ -214,12 +214,9 @@ class ApiPostImageUpload(CreateAPIView):
     def create(self, request, *args, **kwargs):
         post_id = request.data.get('post_id')
         photos = request.data.getlist('photos')
-        for photo in photos:
-            serializer = self.get_serializer(data={'post': post_id, 'photo': photo})
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-        post = Post.objects.get(id=post_id)
-        photos_serializer = self.get_serializer(post.post_images, many=True)
+        photos_serializer = self.get_serializer(data=[{'post': post_id, 'photo': photo} for photo in photos], many=True)
+        photos_serializer.is_valid(raise_exception=True)
+        photos_serializer.save()
         result = {'post_id': post_id, 'photos': [item['photo'] for item in photos_serializer.data]}
         return Response(result, status=status.HTTP_201_CREATED)
 

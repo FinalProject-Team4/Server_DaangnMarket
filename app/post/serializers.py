@@ -57,10 +57,20 @@ class PostingSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'content', 'category', 'price', 'locate', 'showed_locate']
 
 
+class PostImageListSerializer(serializers.ListSerializer):
+    def create(self, validated_data):
+        instances = [
+            PostImage(**attrs) for attrs in validated_data
+        ]
+        PostImage.objects.bulk_create(instances)
+        return PostImage.objects.all()
+
+
 class PostImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostImage
         fields = ['photo', 'post']
+        list_serializer_class = PostImageListSerializer
 
 
 class RecommendWordSerializer(serializers.ModelSerializer):
