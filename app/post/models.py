@@ -79,7 +79,7 @@ class Post(models.Model):
 
 class PostImage(models.Model):
     photo = models.ImageField(upload_to='images/')
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='post_images')
 
     class Meta:
         verbose_name = '이미지'
