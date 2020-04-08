@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
+from django.db import models
 
 from post.models import Post, PostImage, RecommendWord
 
@@ -55,16 +57,13 @@ class PostingSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'content', 'category', 'price', 'locate', 'showed_locate']
 
 
-class PostImageCreateSerializer(serializers.ModelSerializer):
-
+class PostImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostImage
         fields = ['photo', 'post']
 
 
 class RecommendWordSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = RecommendWord
         fields = ['content']
-

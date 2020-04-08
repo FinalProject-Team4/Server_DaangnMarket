@@ -1,4 +1,3 @@
-
 from django.db.models import Q
 from django.shortcuts import render
 from django.utils.datastructures import MultiValueDict
@@ -14,8 +13,8 @@ from rest_framework.parsers import MultiPartParser, JSONParser
 from location.models import Locate
 from members.models import User
 from post.models import Post, RecommendWord
-from post.serializers import PostImageCreateSerializer, PostListSerializer, PostDetailSerializer, PostingSerializer, \
-    RecommendWordSerializer
+from post.serializers import PostListSerializer, PostDetailSerializer, PostingSerializer, \
+    RecommendWordSerializer, PostImageSerializer
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, get_object_or_404
 
 
@@ -198,7 +197,6 @@ class ApiPostCreateLocate(CreateAPIView):
 
 # post edit
 
-
 # post image upload
 class ApiPostImageUpload(CreateAPIView):
     """
@@ -210,25 +208,19 @@ class ApiPostImageUpload(CreateAPIView):
         - post_id: 게시글 id
         - photos: 사진 이미지들
     """
-    serializer_class = PostImageCreateSerializer
+    serializer_class = PostImageSerializer
     parser_classes = (MultiPartParser, JSONParser)
 
     def create(self, request, *args, **kwargs):
         post = request.data.get('post_id')
         photos = request.data.getlist('photos')
-        photo_result = []
         for photo in photos:
-            data = {'post': post,
-                    'photo': photo,
-                    }
-            serializer = PostImageCreateSerializer(data=data)
-            if serializer.is_valid():
-                serializer.save()
-                photo_result.append(serializer.data.get('photo'))
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        result = {'photos': photo_result}
+            serializer = self.get_serializer(data={'post': post, 'photo': photo})
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+        post = Post.objects.get(id=post)
+        photos_serializer = self.get_serializer(post.post_images, many=True)
+        result = {'post_id': post, 'photos': [item['photo'] for item in photos_serializer.data]}
         return Response(result, status=status.HTTP_201_CREATED)
 
 
