@@ -23,7 +23,7 @@ class PostListSerializer(serializers.ModelSerializer):
             'address',
             'price',
             'state',
-            'postimage_set',
+            'post_images',
         )
 
 
@@ -45,7 +45,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
             'address',
             'price',
             'state',
-            'postimage_set',
+            'post_images',
         )
 
 
