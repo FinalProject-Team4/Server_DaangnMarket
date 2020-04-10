@@ -11,4 +11,9 @@ class PostAdmin(ImportExportMixin, admin.ModelAdmin):
 
 @admin.register(PostImage)
 class PostImageAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('image_name', 'post')
+
+    def image_name(self, obj):
+        return obj.photo.name
+
+    image_name.short_description = 'Image File Name'

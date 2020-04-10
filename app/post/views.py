@@ -14,7 +14,7 @@ from location.models import Locate
 from members.models import User
 from post.models import Post, RecommendWord
 from post.serializers import PostListSerializer, PostDetailSerializer, PostCreateSerializer, \
-    RecommendWordSerializer, PostImageSerializer, PostImageUploadSerializer
+    RecommendWordSerializer, PostImageUploadSerializer
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, get_object_or_404
 
 
@@ -204,30 +204,10 @@ class ApiPostImageUpload(CreateAPIView):
 
     ---
     ## /post/image/upload/
-    ## 내용
-        - post_id: 게시글 id
-        - photos: 사진 이미지들
     """
     queryset = Post.objects.all()
     serializer_class = PostImageUploadSerializer
     parser_classes = (MultiPartParser, JSONParser)
-
-    # def create(self, request, *args, **kwargs):
-    #     post_id = request.data.get('post_id')
-    #     photos = request.data.getlist('photos')
-    #     photos_serializer = PostImageSerializer(data=[{'post': post_id, 'photo': photo} for photo in photos], many=True)
-    #     photos_serializer.is_valid(raise_exception=True)
-    #     photos_serializer.save()
-    #     return super(ApiPostImageUpload, self).create(request, *args, **kwargs)
-
-    # def create(self, request, *args, **kwargs):
-    #     print('hi')
-    #     return super().create(request, *args, **kwargs)
-    #
-    # def get_object(self):
-    #     post_id = self.request.data.get('post_id')
-    #     post = Post.objects.get(id=post_id)
-    #     return post
 
 
 class ApiSearch(ListAPIView):

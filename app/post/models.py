@@ -86,6 +86,9 @@ class PostImage(models.Model):
         verbose_name_plural = '%s 목록' % verbose_name
 
     def __str__(self):
+        return self.photo.url
+
+    def __unicode__(self):
         return self.photo.name
 
 

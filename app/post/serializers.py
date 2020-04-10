@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
-from django.db import models
+from rest_framework.relations import StringRelatedField
 
 from post.models import Post, PostImage, RecommendWord
 
@@ -58,23 +57,9 @@ class PostCreateSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'content', 'category', 'price', 'locate', 'showed_locate']
 
 
-class PostImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PostImage
-        fields = ('post', 'photo')
-        read_only_fields = ('post',)
-
-
 class PostImageUploadSerializer(serializers.ModelSerializer):
-    photos = PostImageSerializer(source='post_images', many=True)
+    photos = StringRelatedField(source='post_images', many=True)
     post_id = serializers.CharField(source='id')
-
-    # photos = serializers.HyperlinkedRelatedField(
-    #     many=True,
-    #     read_only=True,
-    #     source='post_images',
-    #     view_name='PostImage-detail'
-    # )
 
     class Meta:
         model = Post
