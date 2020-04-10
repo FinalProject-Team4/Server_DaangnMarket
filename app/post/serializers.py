@@ -5,6 +5,7 @@ from django.db import models
 from post.models import Post, PostImage, RecommendWord
 
 
+# -> PostSerializer
 class PostListSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='author.username')
     address = serializers.CharField(source='locate.dong')
@@ -49,7 +50,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
         )
 
 
-class PostingSerializer(serializers.ModelSerializer):
+class PostCreateSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
 
     class Meta:
@@ -57,20 +58,42 @@ class PostingSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'content', 'category', 'price', 'locate', 'showed_locate']
 
 
-class PostImageListSerializer(serializers.ListSerializer):
-    def create(self, validated_data):
-        instances = [
-            PostImage(**attrs) for attrs in validated_data
-        ]
-        PostImage.objects.bulk_create(instances)
-        return PostImage.objects.all()
-
-
 class PostImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostImage
-        fields = ['photo', 'post']
-        list_serializer_class = PostImageListSerializer
+        fields = ('post', 'photo')
+        read_only_fields = ('post',)
+
+
+class PostImageUploadSerializer(serializers.ModelSerializer):
+    photos = PostImageSerializer(source='post_images', many=True)
+    post_id = serializers.CharField(source='id')
+
+    # photos = serializers.HyperlinkedRelatedField(
+    #     many=True,
+    #     read_only=True,
+    #     source='post_images',
+    #     view_name='PostImage-detail'
+    # )
+
+    class Meta:
+        model = Post
+        fields = ('post_id', 'photos')
+
+    def create(self, validated_data):
+        post_id = validated_data['post_id']
+        photos = validated_data.pop('photos')
+        post = Post.objects.get(id=post_id)
+        for photo in photos:
+            PostImage.objects.create(post=post, **photo)
+        return post
+
+    def to_internal_value(self, data):
+        ret = {
+            'post_id': data.get('post_id'),
+            'photos': [{'photo': photo} for photo in data.getlist('photos')]
+        }
+        return ret
 
 
 class RecommendWordSerializer(serializers.ModelSerializer):
