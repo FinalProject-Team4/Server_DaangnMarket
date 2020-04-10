@@ -13,8 +13,8 @@ from rest_framework.parsers import MultiPartParser, JSONParser
 from location.models import Locate
 from members.models import User
 from post.models import Post, RecommendWord
-from post.serializers import PostListSerializer, PostDetailSerializer, PostingSerializer, \
-    RecommendWordSerializer, PostImageSerializer
+from post.serializers import PostListSerializer, PostDetailSerializer, PostCreateSerializer, \
+    RecommendWordSerializer, PostImageSerializer, PostImageUploadSerializer
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, get_object_or_404
 
 
@@ -152,7 +152,7 @@ class ApiPostCreate(CreateAPIView):
         - price: 판매 가격
         - locate: 게시글 게시 지역
     """
-    serializer_class = PostingSerializer
+    serializer_class = PostCreateSerializer
 
     def create(self, request, *args, **kwargs):
         print(request.data)
@@ -165,7 +165,7 @@ class ApiPostCreate(CreateAPIView):
 
 
 class ApiPostCreateLocate(CreateAPIView):
-    serializer_class = PostingSerializer
+    serializer_class = PostCreateSerializer
 
     def create(self, request, *args, **kwargs):
         locate_id = request.data.get('locate')
@@ -208,17 +208,26 @@ class ApiPostImageUpload(CreateAPIView):
         - post_id: 게시글 id
         - photos: 사진 이미지들
     """
-    serializer_class = PostImageSerializer
+    queryset = Post.objects.all()
+    serializer_class = PostImageUploadSerializer
     parser_classes = (MultiPartParser, JSONParser)
 
-    def create(self, request, *args, **kwargs):
-        post_id = request.data.get('post_id')
-        photos = request.data.getlist('photos')
-        photos_serializer = self.get_serializer(data=[{'post': post_id, 'photo': photo} for photo in photos], many=True)
-        photos_serializer.is_valid(raise_exception=True)
-        photos_serializer.save()
-        result = {'post_id': post_id, 'photos': [item['photo'] for item in photos_serializer.data]}
-        return Response(result, status=status.HTTP_201_CREATED)
+    # def create(self, request, *args, **kwargs):
+    #     post_id = request.data.get('post_id')
+    #     photos = request.data.getlist('photos')
+    #     photos_serializer = PostImageSerializer(data=[{'post': post_id, 'photo': photo} for photo in photos], many=True)
+    #     photos_serializer.is_valid(raise_exception=True)
+    #     photos_serializer.save()
+    #     return super(ApiPostImageUpload, self).create(request, *args, **kwargs)
+
+    # def create(self, request, *args, **kwargs):
+    #     print('hi')
+    #     return super().create(request, *args, **kwargs)
+    #
+    # def get_object(self):
+    #     post_id = self.request.data.get('post_id')
+    #     post = Post.objects.get(id=post_id)
+    #     return post
 
 
 class ApiSearch(ListAPIView):
