@@ -13,8 +13,7 @@ __pycache__/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-media
-
+.media
 
 # poetry로 패키지 다운
 requirements.txt

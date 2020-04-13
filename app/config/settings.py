@@ -27,7 +27,7 @@ with open(SECRET_FILE) as json_file:
     SENTRY_DSN = data['SENTRY_DSN']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*', ]
 
@@ -100,20 +100,20 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': DB_NAME,
-        'USER': DB_USER,
-        'PASSWORD': DB_PASSWORD,
-        'HOST': DB_HOST,
-        'PORT': 5432,
-    },
     # 'default': {
     #     'ENGINE': 'django.contrib.gis.db.backends.postgis',
-    #     'NAME': 'db.daangn',
-    #     'USER': 'jam',
-    #     'HOST': 'localhost',
+    #     'NAME': DB_NAME,
+    #     'USER': DB_USER,
+    #     'PASSWORD': DB_PASSWORD,
+    #     'HOST': DB_HOST,
+    #     'PORT': 5432,
     # },
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'db.daangn',
+        'USER': 'jam',
+        'HOST': 'localhost',
+    },
 }
 
 # Cross domain
@@ -182,6 +182,19 @@ sentry_sdk.init(
     # django.contrib.auth) you may enable sending PII data.
     send_default_pii=True
 )
+
+# Swagger
+SWAGGER_SETTINGS = {
+    'DEFAULT_AUTO_SCHEMA_CLASS': 'core.swagger_custom.MyAutoSchema',
+    'SECURITY_DEFINITIONS': {
+        'Token': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        },
+    }
+}
+
 # Django Push Notification
 PUSH_NOTIFICATIONS_SETTINGS = {
     'FCM_API_KEY': 'AAAAFTwNi8I:APA91bGm57yBulML3oQEPQSezorzYzoyIr5v8YRmk4akotEFjxjInMnzmTwOVrl7DLCpQQiXifjrpB3nlFqT3H2hS9QBny25SCq8WuqV-xbIBcCuOgeiBpL_iDQBWbL1hfoLh1DiPmg-',

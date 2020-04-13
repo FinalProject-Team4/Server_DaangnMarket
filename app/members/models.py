@@ -5,7 +5,7 @@ from core import models as core_models
 
 
 def content_file_name(instance, filename):
-    return '/'.join(['avatar', f'{instance.username}-{filename}'])
+    return '/'.join(['avatars', f'{instance.username}-{filename}'])
 
 
 class User(core_models.TimeStampedModel, AbstractUser):

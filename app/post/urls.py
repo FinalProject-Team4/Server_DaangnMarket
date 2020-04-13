@@ -1,17 +1,18 @@
 from django.urls import path
 
-from post import views
+from post.views import *
+from post.swaggers import *
 
 urlpatterns = [
-    # path('locate/', views.LocateListAPI.as_view()),
-    path('list/', views.ApiPostList.as_view()),
-    path('list/gps/', views.ApiPostListWithGPS.as_view()),
-    path('list/category/', views.ApiPostListWithCate.as_view()),
-    path('detail/', views.ApiPostDetail.as_view()),
-    path('create/', views.ApiPostCreate.as_view()),
-    path('create/locate/', views.ApiPostCreateLocate.as_view()),
-    path('image/upload/', views.ApiPostImageUpload.as_view()),
+    # path('locate/', LocateListAPI.as_view()),
+    path('list/', ApiPostList.as_view()),
+    path('list/gps/', ApiPostListWithGPS.as_view()),
+    path('list/category/', ApiPostListWithCate.as_view()),
+    path('detail/', ApiPostDetail.as_view()),
+    path('create/', ApiPostCreate.as_view()),
+    path('create/locate/', ApiPostCreateLocate.as_view()),
+    path('image/upload/', decorated_post_image_upload_api),
 
     # 검색
-    path('search/', views.ApiSearch.as_view()),
+    path('search/', ApiSearch.as_view()),
 ]
