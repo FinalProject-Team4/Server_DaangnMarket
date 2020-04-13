@@ -8,11 +8,6 @@ from core.utils import make_dir
 BASE_DIR = make_dir(os.path.abspath(__file__), 3)
 ROOT_DIR = make_dir(BASE_DIR)
 
-# aad/.media
-# User-uploaded static files의 기본 경로
-MEDIA_ROOT = os.path.join(ROOT_DIR, '.media')
-MEDIA_URL = '/media/'
-
 with open(os.path.join(ROOT_DIR, 'secrets.json')) as json_file:
     SECRETS_FULL = json.load(json_file)
     SECRETS_BASE = SECRETS_FULL['base']
@@ -124,6 +119,11 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(ROOT_DIR, 'staticfiles')
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+
+# aad/.media
+# User-uploaded static files의 기본 경로
+MEDIA_ROOT = os.path.join(ROOT_DIR, '.media')
+MEDIA_URL = '/media/'
 
 # Sentry
 sentry_sdk.init(
