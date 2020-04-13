@@ -50,20 +50,48 @@ class PostDetailSerializer(serializers.ModelSerializer):
 
 
 class PostCreateSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(read_only=True)
+    id = serializers.IntegerField(
+        help_text='게시물 번호')
 
     class Meta:
         model = Post
         fields = ['id', 'title', 'content', 'category', 'price', 'locate', 'showed_locate']
+        read_only_fields = ['id', ]
+        examples = {
+            'id': '1',
+            'title': '아이패드 신형',
+            'content': '싸게 팝니다',
+            'category': 'digital',
+            'price': '1000',
+            'locate': 435,
+            'showed_locate': [
+                1234,
+                2346
+            ],
+        }
+
+
+class PostImageListingField(serializers.RelatedField):
+    def to_representation(self, value):
+        return value.photo.url
 
 
 class PostImageUploadSerializer(serializers.ModelSerializer):
-    photos = StringRelatedField(source='post_images', many=True)
-    post_id = serializers.CharField(source='id')
+    post_id = serializers.CharField(
+        source='id', help_text='게시물 번호')
+    photos = PostImageListingField(
+        source='post_images', queryset=PostImage.objects.all(), many=True, help_text='상품 이미지 URI\'s')
 
     class Meta:
         model = Post
         fields = ('post_id', 'photos')
+        examples = {
+            'post_id': '2',
+            'photos': [
+                'https://img_server.com/post_images/post_2/anna.jpeg',
+                'https://img_server.com/post_images/post_3/elsa.jpeg',
+            ]
+        }
 
     def create(self, validated_data):
         post_id = validated_data['post_id']
