@@ -83,12 +83,11 @@ def post_image_path(instance, filename):
 
 class PostImage(models.Model):
     photo = models.ImageField(
-        upload_to=post_image_path, help_text='상품 사진')
+        upload_to=post_image_path, blank=True, help_text='상품 사진')
     post = models.ForeignKey(
         Post, on_delete=models.CASCADE, related_name='post_images', help_text='게시물 번호')
-    author = models.ForeignKey(
-        User, on_delete=models.CASCADE, help_text='상품 올린 유저')
-
+    # author = models.ForeignKey(
+    #     User, on_delete=models.CASCADE, help_text='상품 올린 유저')
 
     class Meta:
         verbose_name = '이미지'
@@ -102,16 +101,15 @@ class PostImage(models.Model):
 class PostLike(models.Model):
     post = models.ForeignKey(
         Post, on_delete=models.CASCADE, help_text='게시물 번호')
-    user = models.ForeignKey(
+    author = models.ForeignKey(
         User, on_delete=models.CASCADE, help_text='좋아요 누른 유저')
-
 
     class Meta:
         verbose_name = '관심'
         verbose_name_plural = '%s 목록' % verbose_name
 
     def __str__(self):
-        return f'{self.user.id}가 {self.post.name} 을 좋아합니다.'
+        return f'{self.author.username}가 {self.post.title} 을 좋아합니다.'
 
 
 '''
