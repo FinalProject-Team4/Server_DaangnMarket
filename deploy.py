@@ -115,9 +115,9 @@ if __name__ == '__main__':
         print(">>>>> server_setting()")
         server_setting()
     except subprocess.CalledProcessError as e:
-        print('deploy.py Error!')
+        print(' deploy.py Error!')
         print(' cmd:', e.cmd)
-        print(' returncode:', e.returncode)
+        print(' return code:', e.returncode)
         print(' output:', e.output)
         print(' stdout:', e.stdout)
         print(' stderr:', e.stderr)
