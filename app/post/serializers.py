@@ -84,7 +84,7 @@ class PostImageUploadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('post_id', 'photos')
+        fields = ('post_id', 'photos',)
         examples = {
             'post_id': '2',
             'photos': [
