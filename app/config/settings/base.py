@@ -3,33 +3,23 @@ import json
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ROOT_DIR = os.path.dirname(BASE_DIR)
+from core.utils import make_dir
+
+BASE_DIR = make_dir(os.path.abspath(__file__), 3)
+ROOT_DIR = make_dir(BASE_DIR)
 
 # aad/.media
 # User-uploaded static files의 기본 경로
 MEDIA_ROOT = os.path.join(ROOT_DIR, '.media')
 MEDIA_URL = '/media/'
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '946wit_ka_)bsr412&@6xn6hkql6e=y($xm&830i!l6_!4w4a@'
+with open(os.path.join(ROOT_DIR, 'secrets.json')) as json_file:
+    SECRETS_FULL = json.load(json_file)
+    SECRETS_BASE = SECRETS_FULL['base']
+    SECRET_KEY = SECRETS_BASE['SECRET_KEY']
+    SENTRY_DSN = SECRETS_BASE['SENTRY_DSN']
 
-SECRET_FILE = os.path.join(ROOT_DIR, 'secrets.json')
-
-with open(SECRET_FILE) as json_file:
-    data = json.load(json_file)
-    # database
-    DB_NAME = data['DB_NAME']
-    DB_USER = data['DB_USER']
-    DB_PASSWORD = data['DB_PASSWORD']
-    DB_HOST = data['DB_HOST']
-    # sentry
-    SENTRY_DSN = data['SENTRY_DSN']
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-
-ALLOWED_HOSTS = ['*', ]
+ALLOWED_HOSTS = []
 
 # Application definition
 REST_FRAMEWORK = {
@@ -97,31 +87,6 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': DB_NAME,
-        'USER': DB_USER,
-        'PASSWORD': DB_PASSWORD,
-        'HOST': DB_HOST,
-        'PORT': 5432,
-    },
-    # 'default': {
-    #     'ENGINE': 'django.contrib.gis.db.backends.postgis',
-    #     'NAME': 'db.daangn',
-    #     'USER': 'jam',
-    #     'HOST': 'localhost',
-    # },
-}
-
-# Cross domain
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_CREDENTIALS = True
-# CORS_ORIGIN_WHITELIST = []
-
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -159,19 +124,6 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(ROOT_DIR, 'staticfiles')
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
-
-# django-debug-toolbar
-INTERNAL_IPS = [
-    '127.0.0.1',
-]
-
-INSTALLED_APPS += [
-    'debug_toolbar',
-]
-
-MIDDLEWARE += [
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
-]
 
 # Sentry
 sentry_sdk.init(
