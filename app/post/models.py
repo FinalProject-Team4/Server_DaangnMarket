@@ -86,6 +86,9 @@ class PostImage(models.Model):
         upload_to=post_image_path, help_text='상품 사진')
     post = models.ForeignKey(
         Post, on_delete=models.CASCADE, related_name='post_images', help_text='게시물 번호')
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, help_text='상품 올린 유저')
+
 
     class Meta:
         verbose_name = '이미지'
@@ -101,6 +104,7 @@ class PostLike(models.Model):
         Post, on_delete=models.CASCADE, help_text='게시물 번호')
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, help_text='좋아요 누른 유저')
+
 
     class Meta:
         verbose_name = '관심'

@@ -56,12 +56,14 @@ THIRD_PARTY_APPS = [
     'import_export',
     'drf_yasg',
     'corsheaders',
+    'push_notifications',
 ]
 PROJECT_APPS = [
     'core.apps.CoreConfig',
     'location.apps.LocationConfig',
     'post.apps.PostConfig',
     'members.apps.MembersConfig',
+    'notification'
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
@@ -137,6 +139,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Auth User model
 AUTH_USER_MODEL = 'members.User'
+USER_MODEL = 'members.User'
 
 # Internationalization
 
@@ -190,4 +193,9 @@ SWAGGER_SETTINGS = {
             'in': 'header'
         },
     }
+}
+
+# Django Push Notification
+PUSH_NOTIFICATIONS_SETTINGS = {
+    'FCM_API_KEY': 'AAAAFTwNi8I:APA91bGm57yBulML3oQEPQSezorzYzoyIr5v8YRmk4akotEFjxjInMnzmTwOVrl7DLCpQQiXifjrpB3nlFqT3H2hS9QBny25SCq8WuqV-xbIBcCuOgeiBpL_iDQBWbL1hfoLh1DiPmg-',
 }
