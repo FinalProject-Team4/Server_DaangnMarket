@@ -9,6 +9,7 @@ urlpatterns = [
     path('location/', include('location.urls')),
     path('post/', include('post.urls')),
     path('members/', include('members.urls')),
+    path('fcm/', include('notification.urls')),
 
     # drf-yasg
     path('swagger<str:format>', schema_view.without_ui(cache_timeout=0), name='schema-json'),

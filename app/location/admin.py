@@ -6,6 +6,6 @@ from location.models import Locate
 
 
 @admin.register(Locate)
-class StoreAdmin(ImportExportMixin, admin.ModelAdmin):
+class LocateAdmin(ImportExportMixin, admin.ModelAdmin):
     pass
 

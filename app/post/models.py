@@ -79,6 +79,7 @@ class Post(models.Model):
 
 class PostImage(models.Model):
     photo = models.ImageField(upload_to='images/')
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
 
     class Meta:
@@ -92,7 +93,7 @@ class PostImage(models.Model):
 # 관심
 class PostLike(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = '관심'
