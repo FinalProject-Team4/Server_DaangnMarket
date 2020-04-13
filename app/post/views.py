@@ -1,14 +1,17 @@
 from django.db.models import Q
 from django.shortcuts import render
 from django.utils.datastructures import MultiValueDict
+from django.utils.decorators import method_decorator
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from django.contrib.gis.db.models.functions import Distance
 
 from django.contrib.gis.measure import D
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from rest_framework.parsers import MultiPartParser, JSONParser
+from rest_framework.parsers import MultiPartParser, JSONParser, FormParser
 
 from location.models import Locate
 from members.models import User
@@ -139,29 +142,21 @@ class ApiPostDetail(RetrieveAPIView):
         return obj
 
 
+@method_decorator(name='post', decorator=swagger_auto_schema(
+    consumes='multipart/form-data',
+))
 class ApiPostCreate(CreateAPIView):
     """
-    post 생성
-
-    ---
-    ## /post/create/
-    ## 내용
-        - title: 게시글 제목
-        - content: 게시글 내용
-        - category: 판매 상품 카테고리 분류
-        - price: 판매 가격
-        - locate: 게시글 게시 지역
+    게시글 생성
+    > POST _{{server}}_**/post/create/**
     """
+    queryset = Post.objects.all()
     serializer_class = PostCreateSerializer
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
+    permission_classes = [IsAuthenticated, ]
 
-    def create(self, request, *args, **kwargs):
-        print(request.data)
-        serializer = self.get_serializer(data=request.data)
-        user = User.objects.get(username='admin')
-        if serializer.is_valid():
-            serializer.save(author=user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
 
 
 class ApiPostCreateLocate(CreateAPIView):
@@ -197,17 +192,14 @@ class ApiPostCreateLocate(CreateAPIView):
 
 # post edit
 
-# post image upload
 class ApiPostImageUpload(CreateAPIView):
     """
-    post 이미지 업로드
-
-    ---
-    ## /post/image/upload/
+    상품 이미지 업로드
+    > POST _{{server}}_**/post/image/upload/**
     """
     queryset = Post.objects.all()
     serializer_class = PostImageUploadSerializer
-    parser_classes = (MultiPartParser, JSONParser)
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
 
 
 class ApiSearch(ListAPIView):

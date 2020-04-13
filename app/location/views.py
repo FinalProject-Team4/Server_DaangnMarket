@@ -16,7 +16,6 @@ class LocateListAPI(generics.ListAPIView):
     '''
     동 ID값을 기준 거리 범위에 있는 동 리스트
 
-    ---
     ## /locatoin/locate/
     ## Parameters
         - dong_id: 동 ID값
