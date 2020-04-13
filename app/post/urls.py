@@ -11,7 +11,7 @@ urlpatterns = [
     path('detail/', ApiPostDetail.as_view()),
     path('create/', ApiPostCreate.as_view()),
     path('create/locate/', ApiPostCreateLocate.as_view()),
-    path('image/upload/', decorated_post_image_upload_api),
+    path('image/upload/', ApiPostImageUpload.as_view()),
 
     # 검색
     path('search/', ApiSearch.as_view()),

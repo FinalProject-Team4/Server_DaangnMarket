@@ -49,7 +49,7 @@ def docker_run(cmd, container=PROJECT_NAME, daemon=False, check_error=True, host
 
 # docker build, push from LOCAL
 def local_build_push():
-    run(f'poetry export --dev -f requirements.txt > requirements.txt')
+    run(f'poetry export --no-dev -f requirements.txt > requirements.txt')
     run(f'docker build -q -t {DOCKER_IMAGE}:{DOCKER_IMAGE_TAG} .')
     run(f'docker push {DOCKER_IMAGE}:{DOCKER_IMAGE_TAG} | grep -e push -e digest')
 

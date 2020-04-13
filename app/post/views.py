@@ -20,6 +20,8 @@ from post.serializers import PostListSerializer, PostDetailSerializer, PostCreat
     RecommendWordSerializer, PostImageUploadSerializer
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, get_object_or_404
 
+from post.swaggers import decorated_post_image_upload_api, decorated_post_create_api
+
 
 class ApiPostList(ListAPIView):
     """
@@ -142,9 +144,7 @@ class ApiPostDetail(RetrieveAPIView):
         return obj
 
 
-@method_decorator(name='post', decorator=swagger_auto_schema(
-    consumes='multipart/form-data',
-))
+@method_decorator(name='post', decorator=decorated_post_create_api)
 class ApiPostCreate(CreateAPIView):
     """
     게시글 생성
@@ -192,6 +192,7 @@ class ApiPostCreateLocate(CreateAPIView):
 
 # post edit
 
+@method_decorator(name='post', decorator=decorated_post_image_upload_api)
 class ApiPostImageUpload(CreateAPIView):
     """
     상품 이미지 업로드

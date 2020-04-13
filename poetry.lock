@@ -186,6 +186,17 @@ Django = ">=1.11"
 sqlparse = ">=0.2.0"
 
 [[package]]
+category = "dev"
+description = "Extensions for Django"
+name = "django-extensions"
+optional = false
+python-versions = "*"
+version = "2.2.9"
+
+[package.dependencies]
+six = ">=1.2"
+
+[[package]]
 category = "main"
 description = "Django-filter is a reusable Django application for allowing users to filter querysets dynamically."
 name = "django-filter"
@@ -209,7 +220,7 @@ Django = ">=2.0"
 diff-match-patch = "*"
 
 [package.dependencies.tablib]
-extras = ["html", "xlsx", "xls", "ods", "yaml"]
+extras = ["html", "xlsx", "xls", "yaml", "ods"]
 version = ">=0.14.0"
 
 [[package]]
@@ -1007,7 +1018,7 @@ python-versions = "*"
 version = "1.3.0"
 
 [metadata]
-content-hash = "441182f31b18489356f883db15ec37da10081d8b35f7fdd7416a137a6c6fab9a"
+content-hash = "5cc215b71f678715b72905831e5a3ba719027527fc69915813db6d9bd34a3750"
 python-versions = "^3.7"
 
 [metadata.files]
@@ -1116,6 +1127,10 @@ django-cors-headers = [
 django-debug-toolbar = [
     {file = "django-debug-toolbar-2.2.tar.gz", hash = "sha256:eabbefe89881bbe4ca7c980ff102e3c35c8e8ad6eb725041f538988f2f39a943"},
     {file = "django_debug_toolbar-2.2-py3-none-any.whl", hash = "sha256:ff94725e7aae74b133d0599b9bf89bd4eb8f5d2c964106e61d11750228c8774c"},
+]
+django-extensions = [
+    {file = "django-extensions-2.2.9.tar.gz", hash = "sha256:2f81b618ba4d1b0e58603e25012e5c74f88a4b706e0022a3b21f24f0322a6ce6"},
+    {file = "django_extensions-2.2.9-py2.py3-none-any.whl", hash = "sha256:b19182d101a441fe001c5753553a901e2ef3ff60e8fbbe38881eb4a61fdd17c4"},
 ]
 django-filter = [
     {file = "django-filter-2.2.0.tar.gz", hash = "sha256:c3deb57f0dd7ff94d7dce52a047516822013e2b441bed472b722a317658cfd14"},
