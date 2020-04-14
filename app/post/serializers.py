@@ -1,8 +1,10 @@
 from rest_framework import serializers
+from rest_framework.relations import StringRelatedField
 
 from post.models import Post, PostImage, RecommendWord
 
 
+# -> PostSerializer
 class PostListSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='author.username')
     address = serializers.CharField(source='locate.dong')
@@ -21,7 +23,7 @@ class PostListSerializer(serializers.ModelSerializer):
             'address',
             'price',
             'state',
-            'postimage_set',
+            'post_images',
         )
 
 
@@ -43,28 +45,71 @@ class PostDetailSerializer(serializers.ModelSerializer):
             'address',
             'price',
             'state',
-            'postimage_set',
+            'post_images',
         )
 
 
-class PostingSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(read_only=True)
+class PostCreateSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(
+        read_only=True, help_text='게시물 번호')
 
     class Meta:
         model = Post
         fields = ['id', 'title', 'content', 'category', 'price', 'locate', 'showed_locate']
+        read_only_fields = ['id', ]
+        examples = {
+            'id': '1',
+            'title': '아이패드 신형',
+            'content': '싸게 팝니다',
+            'category': 'digital',
+            'price': '1000',
+            'locate': 435,
+            'showed_locate': [
+                1234,
+                2346
+            ],
+        }
 
 
-class PostImageCreateSerializer(serializers.ModelSerializer):
+class PostImageListingField(serializers.RelatedField):
+    def to_representation(self, value):
+        return value.photo.url
+
+
+class PostImageUploadSerializer(serializers.ModelSerializer):
+    post_id = serializers.CharField(
+        source='id', help_text='게시물 번호')
+    photos = PostImageListingField(
+        source='post_images', queryset=PostImage.objects.all(), many=True, help_text='상품 이미지 URI\'s')
 
     class Meta:
-        model = PostImage
-        fields = ['photo', 'post']
+        model = Post
+        fields = ('post_id', 'photos',)
+        examples = {
+            'post_id': '2',
+            'photos': [
+                'https://img_server.com/post_images/post_2/anna.jpeg',
+                'https://img_server.com/post_images/post_3/elsa.jpeg',
+            ]
+        }
+
+    def create(self, validated_data):
+        post_id = validated_data['post_id']
+        photos = validated_data.pop('photos')
+        post = Post.objects.get(id=post_id)
+        for photo in photos:
+            PostImage.objects.create(post=post, **photo)
+        return post
+
+    def to_internal_value(self, data):
+        ret = {
+            'post_id': data.get('post_id'),
+            'photos': [{'photo': photo} for photo in data.getlist('photos')]
+        }
+        return ret
 
 
 class RecommendWordSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = RecommendWord
         fields = ['content']
-

@@ -181,6 +181,19 @@ sentry_sdk.init(
     # django.contrib.auth) you may enable sending PII data.
     send_default_pii=True
 )
+
+# Swagger
+SWAGGER_SETTINGS = {
+    'DEFAULT_AUTO_SCHEMA_CLASS': 'core.swagger_custom.MyAutoSchema',
+    'SECURITY_DEFINITIONS': {
+        'Token': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        },
+    }
+}
+
 # Django Push Notification
 PUSH_NOTIFICATIONS_SETTINGS = {
     'USER_MODEL': AUTH_USER_MODEL,

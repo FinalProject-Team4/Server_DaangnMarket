@@ -1,22 +1,13 @@
-import os
-
-import firebase_admin
 from django.contrib.auth import get_user_model
 from django.shortcuts import render
-from firebase_admin import auth, credentials
-from rest_framework import status
 from rest_framework.authtoken.models import Token
+from rest_framework.generics import GenericAPIView
 from rest_framework.parsers import FormParser, MultiPartParser, JSONParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from members.serializers import UserSerializer
+from members.serializers import *
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ROOT_DIR = os.path.dirname(BASE_DIR)
-
-cred = credentials.Certificate(f"{ROOT_DIR}/serviceAccountKey.json")
-default_app = firebase_admin.initialize_app(cred)
 
 User = get_user_model()
 
@@ -29,7 +20,10 @@ def signup_view(request):
     return render(request, "sign_up.html")
 
 
-class FirebaseLogin(APIView):
+class FirebaseLogin(GenericAPIView):
+    queryset = User.objects.all()
+    serializer_class = LoginSerializer
+
     def post(self, request):
         id_token = request.data.get('idToken', None)
 

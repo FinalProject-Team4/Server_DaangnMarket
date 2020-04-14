@@ -1,8 +1,8 @@
-
 from django.db import models
 
 from location.models import Locate
 from members.models import User
+from core.models import TimeStampedModel as coreModel
 
 POST_CHOICES = (
     # 디지털/가전
@@ -45,25 +45,25 @@ STATE_CHOICES = (
 )
 
 
-class Post(models.Model):
-    # 작성자
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
-    # 제목
-    title = models.CharField(max_length=100)
-    # 본문
-    content = models.TextField()
-    category = models.CharField(choices=POST_CHOICES, max_length=20)
-    price = models.IntegerField(default=0)
-    # 거래지역
-    locate = models.ForeignKey(Locate, on_delete=models.CASCADE)
-    # 보여질 지역
-    showed_locate = models.ManyToManyField(Locate, related_name='showed_locate')
-    view_count = models.IntegerField(default=0)
-    # 상태
-    state = models.CharField(choices=STATE_CHOICES, max_length=10, default='sales')
-
-    updated = models.DateTimeField(auto_now_add=True)
-    created = models.DateTimeField(auto_now_add=True)
+class Post(coreModel):
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, help_text='작성자')
+    title = models.CharField(
+        max_length=100, help_text='제목')
+    content = models.TextField(
+        help_text='본문')
+    category = models.CharField(
+        choices=POST_CHOICES, max_length=20, help_text='카테고리')
+    price = models.IntegerField(
+        default=0, help_text='가격')
+    locate = models.ForeignKey(
+        Locate, on_delete=models.CASCADE, help_text='거래 지역')
+    showed_locate = models.ManyToManyField(
+        Locate, related_name='showed_locate', help_text='보여질 지역')
+    view_count = models.IntegerField(
+        default=0, help_text='조회 수')
+    state = models.CharField(
+        choices=STATE_CHOICES, max_length=10, default='sales', help_text='주문 상태')
 
     class Meta:
         verbose_name = '게시글'
@@ -77,10 +77,17 @@ class Post(models.Model):
         )
 
 
+def post_image_path(instance, filename):
+    return '/'.join(['post_images/', f'/post_{instance.post.id}/', filename])
+
+
 class PostImage(models.Model):
-    photo = models.ImageField(upload_to='images/')
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    photo = models.ImageField(
+        upload_to=post_image_path, blank=True, help_text='상품 사진')
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, related_name='post_images', help_text='게시물 번호')
+    # author = models.ForeignKey(
+    #     User, on_delete=models.CASCADE, help_text='상품 올린 유저')
 
     class Meta:
         verbose_name = '이미지'
@@ -92,15 +99,17 @@ class PostImage(models.Model):
 
 # 관심
 class PostLike(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, help_text='게시물 번호')
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, help_text='좋아요 누른 유저')
 
     class Meta:
         verbose_name = '관심'
         verbose_name_plural = '%s 목록' % verbose_name
 
     def __str__(self):
-        return f'{self.user.id}가 {self.post.name} 을 좋아합니다.'
+        return f'{self.author.username}가 {self.post.title} 을 좋아합니다.'
 
 
 '''
@@ -118,8 +127,10 @@ class PostReview(models.Model):
 
 # 검색어
 class RecommendWord(models.Model):
-    content = models.CharField(max_length=100)
-    count = models.IntegerField(default=0)
+    content = models.CharField(
+        max_length=100, help_text='추천 검색어')
+    count = models.IntegerField(
+        default=0, help_text='검색 횟수')
 
     class Meta:
         verbose_name = '추천 검색어'
@@ -127,5 +138,3 @@ class RecommendWord(models.Model):
 
     def __str__(self):
         return f'{self.content} 가 {self.count}번 검색되었습니다.'
-
-

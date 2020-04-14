@@ -4,12 +4,18 @@ from django.contrib.gis.geos import Point
 
 
 class Locate(models.Model):
-    dong = models.CharField(max_length=20)
-    gu = models.CharField(max_length=20)
-    address = models.CharField(max_length=100)
-    longitude = models.DecimalField(decimal_places=8, max_digits=12, null=True, blank=True)
-    latitude = models.DecimalField(decimal_places=8, max_digits=12, null=True, blank=True)
-    latlng = models.PointField(null=True, blank=True)
+    dong = models.CharField(
+        max_length=20, help_text='동 이름(i.g. 성수동)')
+    gu = models.CharField(
+        max_length=20, help_text='구 이름(i.g. 성동구)')
+    address = models.CharField(
+        max_length=100, help_text='도로명 주소')
+    longitude = models.DecimalField(
+        decimal_places=8, max_digits=12, null=True, blank=True, help_text='경도')
+    latitude = models.DecimalField(
+        decimal_places=8, max_digits=12, null=True, blank=True, help_text='위도')
+    latlng = models.PointField(
+        null=True, blank=True, help_text='위도 경도 좌표 객체')
 
     def __str__(self):
         return f'{self.dong}'
@@ -56,4 +62,3 @@ class Locate(models.Model):
             self.latitude = float(0)
             self.longitude = float(0)
             return True
-
