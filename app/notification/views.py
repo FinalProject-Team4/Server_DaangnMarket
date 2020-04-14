@@ -30,7 +30,7 @@ class ApiFcmDeviceRegister(CreateAPIView):
         serializer = self.get_serializer(data=data)
 
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(user=user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_409_CONFLICT)
@@ -43,8 +43,9 @@ class ApiSendFcm(CreateAPIView):
 
     def create(self, request, *args, **kwargs):
         user = self.request.user
-        sender = GCMDevice.objects.get(user=user)
-        receiver = GCMDevice.objects.get(user=user)
+
+        sender = GCMDevice.objects.get(name=user.username)
+        receiver = GCMDevice.objects.get(user=user.username)
         serializer = self.get_serializer(data=request.data)
 
         if serializer.is_valid():
