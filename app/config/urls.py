@@ -19,14 +19,7 @@ urlpatterns = [
     path('docs/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
 
-urlpatterns += static(
-    # URL앞부분이 /media/이면
-    prefix=settings.MEDIA_URL,
-    # document_root위치에서 나머지 path에 해당하는 파일을 리턴
-    document_root=settings.MEDIA_ROOT,
-)
-
-if 'config.settings.dev' == os.environ.get('DJANGO_SETTINGS_MODULE'):
+if os.environ.get('DJANGO_SETTINGS_MODULE') != 'config.settings.production':
     # django-debugtoolbar
     import debug_toolbar
 

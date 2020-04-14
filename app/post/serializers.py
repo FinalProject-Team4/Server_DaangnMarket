@@ -51,7 +51,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
 
 class PostCreateSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(
-        help_text='게시물 번호')
+        read_only=True, help_text='게시물 번호')
 
     class Meta:
         model = Post
