@@ -14,5 +14,5 @@ urlpatterns = [
     path('image/upload/', ApiPostImageUpload.as_view()),
 
     # 검색
-    path('search/', ApiSearch.as_view()),
+    # path('search/', ApiSearch.as_view()),
 ]

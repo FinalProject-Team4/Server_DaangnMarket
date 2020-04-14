@@ -15,9 +15,8 @@ from rest_framework.parsers import MultiPartParser, JSONParser, FormParser
 
 from location.models import Locate
 from members.models import User
-from post.models import Post, RecommendWord
-from post.serializers import PostListSerializer, PostDetailSerializer, PostCreateSerializer, \
-    RecommendWordSerializer, PostImageUploadSerializer
+from post.models import Post
+from post.serializers import PostListSerializer, PostDetailSerializer, PostCreateSerializer, PostImageUploadSerializer
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, get_object_or_404
 
 from post.swaggers import decorated_post_image_upload_api, decorated_post_create_api
@@ -203,26 +202,26 @@ class ApiPostImageUpload(CreateAPIView):
     parser_classes = (MultiPartParser, FormParser, JSONParser)
 
 
-class ApiSearch(ListAPIView):
-    serializer_class = PostListSerializer
+# class ApiSearch(ListAPIView):
+#     serializer_class = PostListSerializer
+#
+#     def get_queryset(self):
+#         word = self.request.query_params.get('word')
+#         txt_list = word.split()
+#         for txt in txt_list:
+#             w = RecommendWord.objects.get_or_create(content=txt)
+#             w.count = w.count + 1
+#             w.save()
+#         post_list = Post.objects.filter(
+#             Q(title__icontains=word) |
+#             Q(content__icontains=word)
+#         ).distinct().order_by('-created')
+#         return post_list
 
-    def get_queryset(self):
-        word = self.request.query_params.get('word')
-        txt_list = word.split()
-        for txt in txt_list:
-            w = RecommendWord.objects.get_or_create(content=txt)
-            w.count = w.count + 1
-            w.save()
-        post_list = Post.objects.filter(
-            Q(title__icontains=word) |
-            Q(content__icontains=word)
-        ).distinct().order_by('-created')
-        return post_list
 
-
-class ApiRecommendWord(ListAPIView):
-    serializer_class = RecommendWordSerializer
-
-    def get_queryset(self):
-        words = RecommendWord.objects.all().order_by('count')[:10]
-        return words
+# class ApiRecommendWord(ListAPIView):
+#     serializer_class = RecommendWordSerializer
+#
+#     def get_queryset(self):
+#         words = RecommendWord.objects.all().order_by('count')[:10]
+#         return words

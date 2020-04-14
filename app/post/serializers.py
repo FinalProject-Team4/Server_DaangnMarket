@@ -56,7 +56,6 @@ class PostCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['id', 'title', 'content', 'category', 'price', 'locate', 'showed_locate']
-        read_only_fields = ['id', ]
         examples = {
             'id': '1',
             'title': '아이패드 신형',
@@ -109,7 +108,7 @@ class PostImageUploadSerializer(serializers.ModelSerializer):
         return ret
 
 
-class RecommendWordSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RecommendWord
-        fields = ['content']
+# class RecommendWordSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = RecommendWord
+#         fields = ['content']
