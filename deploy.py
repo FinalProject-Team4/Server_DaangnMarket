@@ -25,6 +25,7 @@ DOCKER_OPTS = [
     ('-t', ''),
     ('-d', ''),
     ('-p', '80:80'),
+    ('-e', 'DJANGO_SETTINGS_MODULE="config.settings.production"'),
     # ('-p', '443:443'),
     # ('-v', '/etc/letsencrypt:/etc/letsencrypt'),
     ('--name', PROJECT_NAME),

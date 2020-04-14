@@ -1,3 +1,5 @@
+import os
+
 from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
@@ -24,10 +26,13 @@ urlpatterns += static(
     document_root=settings.MEDIA_ROOT,
 )
 
-if settings.DEBUG:
+if 'config.settings.dev' == os.environ.get('DJANGO_SETTINGS_MODULE'):
     # django-debugtoolbar
     import debug_toolbar
 
     urlpatterns = [
         path('__debug__/', include(debug_toolbar.urls)),
     ] + urlpatterns
+
+    # local media
+    urlpatterns += static(prefix=settings.dev.MEDIA_URL, document_root=settings.dev.MEDIA_ROOT, )
