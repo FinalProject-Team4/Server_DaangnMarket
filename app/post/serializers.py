@@ -101,13 +101,11 @@ class PostImageUploadSerializer(serializers.ModelSerializer):
         return post
 
     def to_internal_value(self, data):
-
         ret = {
             'post_id': data.get('post_id'),
             'photos': [{'photo': photo} for photo in data.getlist('photos')]
         }
         return ret
-
 
 # class RecommendWordSerializer(serializers.ModelSerializer):
 #     class Meta:
