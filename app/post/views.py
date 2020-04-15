@@ -191,7 +191,7 @@ class ApiPostCreateLocate(CreateAPIView):
 
 # post edit
 
-# @method_decorator(name='post', decorator=decorated_post_image_upload_api)
+@method_decorator(name='post', decorator=decorated_post_image_upload_api)
 class ApiPostImageUpload(CreateAPIView):
     """
     상품 이미지 업로드
