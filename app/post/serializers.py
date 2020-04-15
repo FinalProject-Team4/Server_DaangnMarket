@@ -79,7 +79,7 @@ class PostImageUploadSerializer(serializers.ModelSerializer):
     post_id = serializers.CharField(
         source='id', help_text='게시물 번호')
     photos = PostImageListingField(
-        source='post_images', queryset=PostImage.objects.all(), many=True, help_text='상품 이미지 URI\'s')
+        source='post_images', queryset=PostImage.objects.all(), many=True, help_text='상품 이미지 URIs')
 
     class Meta:
         model = Post
@@ -101,6 +101,7 @@ class PostImageUploadSerializer(serializers.ModelSerializer):
         return post
 
     def to_internal_value(self, data):
+
         ret = {
             'post_id': data.get('post_id'),
             'photos': [{'photo': photo} for photo in data.getlist('photos')]
