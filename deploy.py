@@ -10,7 +10,7 @@ ROOT_DIR = os.path.dirname(BASE_DIR)
 HOME = str(Path.home())
 PROJECT_NAME = 'daangn-market'
 PROJECT_DIR = os.path.dirname(ROOT_DIR)
-PROJECT_DIR = os.path.join(ROOT_DIR, PROJECT_NAME, 'Server_DaangnMarket_Fork')
+PROJECT_DIR = os.path.join(ROOT_DIR, PROJECT_NAME, 'Server_DaangnMarket')
 SECRETS_FILE = os.path.join(PROJECT_DIR, 'secrets.json')
 
 USER = 'ubuntu'
