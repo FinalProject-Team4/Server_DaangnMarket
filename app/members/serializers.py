@@ -36,14 +36,11 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    id_token = serializers.CharField()
-    user = UserSerializer()
+    id_token = serializers.CharField(write_only=True, required=True)
 
-    class Meta:
-        read_only_fields = ['user', ]
-        extra_kwargs = {
-            'id_token': {'write_only': True},
-        }
+    def __init__(self, instance=None, data=None, **kwargs):
+        super(LoginSerializer, self).__init__(instance, data, **kwargs)
+        self.user = None
 
     def validate_id_token(self, value):
         try:
@@ -52,5 +49,11 @@ class LoginSerializer(serializers.Serializer):
             user = User.objects.get_or_none(uid=uid)
             if not user:
                 raise ValueError
+            self.user = UserSerializer(user)
         except ValueError:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+    def to_representation(self, instance):
+        data = super(LoginSerializer, self).to_representation(instance)
+        data.update(self.user.data)
+        return data

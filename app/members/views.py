@@ -1,13 +1,13 @@
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate, login
 from django.shortcuts import render
 from rest_framework.authtoken.models import Token
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import GenericAPIView, RetrieveAPIView
 from rest_framework.parsers import FormParser, MultiPartParser, JSONParser
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from members.serializers import *
-
 
 User = get_user_model()
 
@@ -21,25 +21,18 @@ def signup_view(request):
 
 
 class FirebaseLogin(GenericAPIView):
+    '''
+    로그인
+    > POST _{{server}}_**/members/login/**
+    '''
     queryset = User.objects.all()
     serializer_class = LoginSerializer
+    permission_classes = (AllowAny,)
 
-    def post(self, request):
-        id_token = request.data.get('idToken', None)
-
-        if not id_token:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            decoded_token = auth.verify_id_token(id_token)
-            uid = decoded_token['uid']
-            user = User.objects.get_or_none(uid=uid)
-            if not user:
-                raise ValueError
-        except ValueError:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
-
-        return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid()
+        return Response(serializer.data)
 
 
 class SignUp(APIView):
