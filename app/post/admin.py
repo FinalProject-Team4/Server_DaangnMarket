@@ -1,7 +1,7 @@
 from django.contrib import admin
 from import_export.admin import ImportExportMixin
 
-from post.models import Post, PostImage
+from post.models import Post, PostImage, RecommendWord, PostLike
 
 
 @admin.register(Post)
@@ -9,7 +9,7 @@ class PostAdmin(ImportExportMixin, admin.ModelAdmin):
     filter_horizontal = ('showed_locate',)
 
 
-@admin.register(PostImage)
+@admin.register(PostImage, PostLike)
 class PostImageAdmin(admin.ModelAdmin):
     list_display = ('image_name', 'post')
 

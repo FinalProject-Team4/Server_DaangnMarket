@@ -14,7 +14,7 @@ PROJECT_DIR = os.path.join(ROOT_DIR, PROJECT_NAME, 'Server_DaangnMarket')
 SECRETS_FILE = os.path.join(PROJECT_DIR, 'secrets.json')
 
 USER = 'ubuntu'
-HOST = json.load(open(SECRETS_FILE))['HOST']
+HOST = json.load(open(SECRETS_FILE))['base']['HOST']
 TARGET = f'{USER}@{HOST}'
 EC2_CERT = os.path.join(HOME, '.ssh', f'daangnMarket.pem')
 
@@ -25,6 +25,7 @@ DOCKER_OPTS = [
     ('-t', ''),
     ('-d', ''),
     ('-p', '80:80'),
+    ('-e', 'DJANGO_SETTINGS_MODULE="config.settings.production"'),
     # ('-p', '443:443'),
     # ('-v', '/etc/letsencrypt:/etc/letsencrypt'),
     ('--name', PROJECT_NAME),
@@ -49,7 +50,7 @@ def docker_run(cmd, container=PROJECT_NAME, daemon=False, check_error=True, host
 
 # docker build, push from LOCAL
 def local_build_push():
-    run(f'poetry export --dev -f requirements.txt > requirements.txt')
+    run(f'poetry export -f requirements.txt > requirements.txt')
     run(f'docker build -q -t {DOCKER_IMAGE}:{DOCKER_IMAGE_TAG} .')
     run(f'docker push {DOCKER_IMAGE}:{DOCKER_IMAGE_TAG} | grep -e push -e digest')
 

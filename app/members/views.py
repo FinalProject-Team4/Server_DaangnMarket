@@ -61,7 +61,6 @@ class SignUp(APIView):
         }
 
         user, created = User.objects.update_or_create(defaults=user_data, uid=uid)
-
         token, _ = Token.objects.get_or_create(user=user)
 
         return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
