@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model, login, authenticate
 from django.shortcuts import render
+from django.utils.decorators import method_decorator
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import GenericAPIView, RetrieveAPIView, CreateAPIView
@@ -9,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from members.serializers import *
+from members.swaggers import *
 
 User = get_user_model()
 
@@ -21,6 +23,7 @@ def signup_view(request):
     return render(request, "sign_up.html")
 
 
+@method_decorator(name='post', decorator=decorated_login_api)
 class Login(GenericAPIView):
     """
     로그인
@@ -42,7 +45,8 @@ class Login(GenericAPIView):
         return Response(UserSerializer(user).data, status.HTTP_200_OK)
 
 
-class SignUp(CreateAPIView):
+@method_decorator(name='post', decorator=decorated_signup_api)
+class SignUp(GenericAPIView):
     """
     회원가입
     > POST _{{server}}_**/members/signup/**

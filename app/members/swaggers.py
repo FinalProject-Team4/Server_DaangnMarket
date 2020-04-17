@@ -1,97 +1,45 @@
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
-from core.swagger_custom import MyAutoSchema
 from members.serializers import UserSerializer
 
 decorated_login_api = \
     swagger_auto_schema(
-        request_body=openapi.Sc
+        responses={
+            201: openapi.Response(
+                description='Success',
+                schema=UserSerializer,
+            ),
+        },
+        tags=['Users'],
     )
 
 decorated_signup_api = \
-    MyAutoSchema(
-        # operation_description="Login API",
-        method='post',
+    swagger_auto_schema(
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
-            required=['idToken', 'username'],
+            required=['id_token', 'username'],
             properties={
-                'idToken': openapi.Schema(
-                    description='Firbase Token',
+                'id_token': openapi.Schema(
+                    description='파이어베이스 토큰',
                     type=openapi.TYPE_STRING
                 ),
                 'username': openapi.Schema(
-                    description='Nickname',
+                    description='닉네임',
                     type=openapi.TYPE_STRING
                 ),
-                # 'avatar': openapi.Schema(
-                #     description='Profile Image',
-                #     type=openapi.TYPE_FILE
-                # )
+                'avatar': openapi.Schema(
+                    description='프로필 사진',
+                    type=openapi.TYPE_STRING
+                ),
             }
         ),
+        consumes='multipart/form-data',
         responses={
-            200: openapi.Response(
-                description='success',
-                examples={
-                    'application/json': {
-                        'uid': 'DadTiDdhiud2lxIlUmnXPCikvGL2',
-                        'avatar': 'http://image.server/avatar/test-user-filename.jpg',
-                        'phone': '+821044445555',
-                        'created': '2020-04-01T17:37:43.034590+09:00',
-                        'updated': '2020-04-01T17:37:43.034590+09:00',
-                        # 'username': 'test-user',
-                        'Authorization': 'Token 12603947067786edef122d86b9b4051d2115bade',
-                    }
-                },
-                schema=UserSerializer
+            201: openapi.Response(
+                description='Success',
+                schema=UserSerializer,
             ),
-            401: openapi.Response(
-                description='failed',
-            )
         },
-        security=[],
         tags=['Users'],
-    )(SignUp.as_view())
-# MyAutoSchema(
-#     # operation_description="Signup API",
-#     method='post',
-#     request_body=openapi.Schema(
-#         type=openapi.TYPE_OBJECT,
-#         required=['idToken', 'username'],
-#         properties={
-#             'idToken': openapi.Schema(
-#                 description='Firbase Token',
-#                 type=openapi.TYPE_STRING
-#             ),
-#             'username': openapi.Schema(
-#                 description='Nickname',
-#                 type=openapi.TYPE_STRING
-#             ),
-#             'avatar': openapi.Schema(
-#                 description='Profile Image',
-#                 type=openapi.TYPE_FILE
-#             )
-#         }
-#     ),
-#     responses={
-#         200: openapi.Response(
-#             description='success',
-#             examples={
-#                 'application/json': {
-#                     'uid': 'DadTiDdhiud2lxIlUmnXPCikvGL2',
-#                     'avatar': 'http://image.server/avatar/test-user-filename.jpg',
-#                     'phone': '+821044445555',
-#                     'created': '2020-04-01T17:37:43.034590+09:00',
-#                     'updated': '2020-04-01T17:37:43.034590+09:00',
-#                     'username': 'test-user',
-#                     'Authorization': 'Token 12603947067786edef122d86b9b4051d2115bade',
-#                 }
-#             },
-#             schema=UserSerializer
-#         ),
-#     },
-#     security=[],
-#     tags=['Users'],
-# )(SignUp.as_view())
+    )

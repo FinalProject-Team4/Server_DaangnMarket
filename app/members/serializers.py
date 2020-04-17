@@ -32,6 +32,15 @@ class UserSerializer(serializers.ModelSerializer):
             'username',
             'Authorization',
         ]
+        examples = {
+            "uid": "YdMCHYy1MlPLnn4HEHFgNmf6MrE2",
+            "avatar": "https://daangn-market.s3.amazonaws.com/media/avatars/carrot.jpeg",
+            "phone": "+821022223333",
+            "created": "2020-04-17T20:14:15.286093+09:00",
+            "updated": "2020-04-17T20:14:15.370422+09:00",
+            "username": "test-user",
+            "Authorization": "Token abf88bad2c296ce6db376fd25d31304709215467"
+        }
 
     def get_authorization(self, obj):
         return f'Token {obj.auth_token}'

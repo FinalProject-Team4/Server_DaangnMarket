@@ -35,8 +35,6 @@ decorated_post_image_upload_api = \
                 description='Bad Request',
             )
         },
-        field_inspectors=[ExampleInspector],
-        security=[],
         tags=['post'],
     )
 
