@@ -1,31 +1,30 @@
+from collections import namedtuple
+from typing import Optional, List
+
 from drf_yasg import openapi
 from drf_yasg.app_settings import swagger_settings
 from drf_yasg.inspectors import SwaggerAutoSchema, SerializerInspector
 
-
-def check_meta_examples(obj, schema_or_ref, resolver=None):
-    has_examples = hasattr(obj, 'Meta') and hasattr(obj.Meta, 'examples')
-    if isinstance(schema_or_ref, openapi.Schema.OR_REF) and has_examples:
-        schema = openapi.resolve_ref(schema_or_ref, resolver)
-        if 'properties' in schema:
-            properties = schema['properties']
-            for name in properties.keys():
-                if name in obj.Meta.examples:
-                    properties[name]['example'] = obj.Meta.examples[name]
-
-    return schema_or_ref
+# Get Examples from Serializer
+from rest_framework.permissions import OperandHolder, SingleOperandHolder
 
 
 class ExampleInspector(SerializerInspector):
     def process_result(self, result, method_name, obj, **kwargs):
-        ret = check_meta_examples(obj, schema_or_ref=result, resolver=self.components)
-
-        return ret
+        has_examples = hasattr(obj, 'Meta') and hasattr(obj.Meta, 'examples')
+        if isinstance(result, openapi.Schema.OR_REF) and has_examples:
+            schema = openapi.resolve_ref(result, self.components)
+            if 'properties' in schema:
+                properties = schema['properties']
+                for name in properties.keys():
+                    if name in obj.Meta.examples:
+                        properties[name]['example'] = obj.Meta.examples[name]
+        return result
 
 
 class MyAutoSchema(SwaggerAutoSchema):
     field_inspectors = [
-        # ExampleInspector,
+       ExampleInspector,
     ] + swagger_settings.DEFAULT_FIELD_INSPECTORS
 
     def __init__(self, view, path, method, components, request, overrides, operation_keys=None):
@@ -33,21 +32,30 @@ class MyAutoSchema(SwaggerAutoSchema):
 
     def get_operation(self, operation_keys=None):
         ret = super(MyAutoSchema, self).get_operation(operation_keys)
-        description = ret.get('description', None)
-        description = description.splitlines() if description else None
-        if description and not ret.get('summary', None):
-            ret['operationId'] = description.pop(0)
-            ret['description'] = ''.join(description)
+        summary = ret.get('summary', None)
+        if summary:
+            ret['operationId'] = summary
         if self.overrides:
             consumes = self.overrides.get('consumes', None)
             if consumes:
                 ret['consumes'] = [consumes]
 
         return ret
-    #
-    # def _get_request_body_override(self):
-    #     schema = super()._get_request_body_override()
-    #     obj = super().get_view_serializer()
-    #     ret = check_meta_examples(obj, schema)
-    #
-    #     return ret
+
+    # Make Permissions description
+
+    def get_summary_and_description(self):
+        """Return summary and description extended with permission docs."""
+        summary, description = super().get_summary_and_description()
+        permissions_description = self._get_permissions_description()
+        if permissions_description:
+            description += permissions_description
+        return summary, description
+
+    def _get_permissions_description(self):
+        permission_class = getattr(self.view, 'permission_classes', None)
+
+        if permission_class:
+            return f'\n**Permissions:** `{permission_class.pop().__name__}`'
+        else:
+            return None

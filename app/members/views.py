@@ -27,7 +27,7 @@ def signup_view(request):
 class Login(GenericAPIView):
     """
     로그인
-    > POST _{{server}}_**/members/login/**
+    ### POST _/members/login/_
     """
     queryset = User.objects.all()
     serializer_class = IdTokenSerializer
@@ -49,12 +49,13 @@ class Login(GenericAPIView):
 class SignUp(GenericAPIView):
     """
     회원가입
-    > POST _{{server}}_**/members/signup/**
+
+    ### POST _/members/signup/_
     """
     queryset = User.objects.all()
     serializer_class = SignUpSerializer
     parser_classes = (MultiPartParser, FormParser, JSONParser)
-    permission_classes = [AllowAny, ]
+    permission_classes = [AllowAny]
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)

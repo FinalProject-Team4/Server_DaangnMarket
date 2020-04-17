@@ -147,12 +147,13 @@ class ApiPostDetail(RetrieveAPIView):
 class ApiPostCreate(CreateAPIView):
     """
     게시글 생성
-    > POST _{{server}}_**/post/create/**
+
+    POST /post/create/
     """
     queryset = Post.objects.all()
     serializer_class = PostCreateSerializer
     parser_classes = (MultiPartParser, FormParser, JSONParser)
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -195,7 +196,8 @@ class ApiPostCreateLocate(CreateAPIView):
 class ApiPostImageUpload(CreateAPIView):
     """
     상품 이미지 업로드
-    > POST _{{server}}_**/post/image/upload/**
+
+    ### POST /post/image/upload/
     """
     queryset = Post.objects.all()
     serializer_class = PostImageUploadSerializer
