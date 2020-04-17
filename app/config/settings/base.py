@@ -101,9 +101,14 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTH_USER_MODEL = 'members.User'
 USER_MODEL = 'members.User'
 
+AUTHENTICATION_BACKENDS = [
+    'core.my_auth.UserBackend',
+    # 'django.contrib.auth.backends.ModelBackend',
+]
+
 # Internationalization
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ko-kr'
 
 TIME_ZONE = 'Asia/Seoul'
 

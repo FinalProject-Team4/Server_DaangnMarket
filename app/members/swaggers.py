@@ -1,35 +1,13 @@
 from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
 from core.swagger_custom import MyAutoSchema
 from members.serializers import UserSerializer
-from members.views import FirebaseLogin, SignUp
 
 decorated_login_api = \
-    MyAutoSchema(
-        # operation_description="Login API",
-        method='post',
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            required=['idToken'],
-            properties={
-                'idToken': openapi.Schema(
-                    description='파이어베이스 Token',
-                    type=openapi.TYPE_STRING
-                )
-            },
-        ),
-        responses={
-            200: openapi.Response(
-                description='success',
-                schema=UserSerializer
-            ),
-            401: openapi.Response(
-                description='failed',
-            )
-        },
-        security=[],
-        tags=['Users'],
-    )(FirebaseLogin.as_view())
+    swagger_auto_schema(
+        request_body=openapi.Sc
+    )
 
 decorated_signup_api = \
     MyAutoSchema(

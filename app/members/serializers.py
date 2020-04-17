@@ -2,9 +2,11 @@ import os
 
 import firebase_admin
 from firebase_admin import auth, credentials
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
 from rest_framework import serializers, status
 from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
+from rest_framework.exceptions import AuthenticationFailed, ValidationError
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT_DIR = os.path.dirname(BASE_DIR)
@@ -35,25 +37,34 @@ class UserSerializer(serializers.ModelSerializer):
         return f'Token {obj.auth_token}'
 
 
-class LoginSerializer(serializers.Serializer):
-    id_token = serializers.CharField(write_only=True, required=True)
+class IdTokenSerializer(serializers.Serializer):
+    id_token = serializers.CharField()
 
-    def __init__(self, instance=None, data=None, **kwargs):
-        super(LoginSerializer, self).__init__(instance, data, **kwargs)
-        self.user = None
-
-    def validate_id_token(self, value):
+    def validate(self, attrs):
+        # exceptions
         try:
-            decoded_token = auth.verify_id_token(value)
-            uid = decoded_token['uid']
-            user = User.objects.get_or_none(uid=uid)
-            if not user:
-                raise ValueError
-            self.user = UserSerializer(user)
+            decoded = auth.verify_id_token(attrs['id_token'])
         except ValueError:
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        return decoded
 
     def to_representation(self, instance):
-        data = super(LoginSerializer, self).to_representation(instance)
-        data.update(self.user.data)
+        return instance
+
+
+class SignUpSerializer(IdTokenSerializer):
+    id_token = serializers.CharField()
+    username = serializers.CharField()
+    avatar = serializers.ImageField(required=False)
+
+    def validate(self, attrs):
+        data = super(SignUpSerializer, self).validate({'id_token': attrs['id_token']})
+        data['username'] = attrs['username']
+        avatar = attrs.get('avatar', None)
+        if avatar:
+            data['avatar'] = avatar
         return data
+
+    def to_representation(self, instance):
+        return instance

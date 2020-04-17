@@ -1,7 +1,8 @@
-from django.contrib.auth import get_user_model, authenticate, login
+from django.contrib.auth import get_user_model, login, authenticate
 from django.shortcuts import render
+from rest_framework import status
 from rest_framework.authtoken.models import Token
-from rest_framework.generics import GenericAPIView, RetrieveAPIView
+from rest_framework.generics import GenericAPIView, RetrieveAPIView, CreateAPIView
 from rest_framework.parsers import FormParser, MultiPartParser, JSONParser
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -20,40 +21,45 @@ def signup_view(request):
     return render(request, "sign_up.html")
 
 
-class FirebaseLogin(GenericAPIView):
-    '''
+class Login(GenericAPIView):
+    """
     로그인
     > POST _{{server}}_**/members/login/**
-    '''
+    """
     queryset = User.objects.all()
-    serializer_class = LoginSerializer
-    permission_classes = (AllowAny,)
-
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid()
-        return Response(serializer.data)
-
-
-class SignUp(APIView):
-    parser_classes = (JSONParser, FormParser, MultiPartParser)
+    serializer_class = IdTokenSerializer
+    permission_classes = [AllowAny, ]
 
     def post(self, request):
-
+        # exceptions
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid()
         try:
-            id_token = request.data.get('idToken', None)
-            decoded_token = auth.verify_id_token(id_token)
-        except ValueError:
+            user = authenticate(request, auth=serializer.data)
+        except AuthenticationFailed:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        uid = decoded_token['uid']
-        user_data = {
-            'phone': decoded_token['phone_number'],
-            'username': request.data.get('username', None),
-            'avatar': request.data.get('avatar', None)
-        }
+        return Response(UserSerializer(user).data, status.HTTP_200_OK)
 
-        user, created = User.objects.update_or_create(defaults=user_data, uid=uid)
-        token, _ = Token.objects.get_or_create(user=user)
 
-        return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+class SignUp(CreateAPIView):
+    """
+    회원가입
+    > POST _{{server}}_**/members/signup/**
+    """
+    queryset = User.objects.all()
+    serializer_class = SignUpSerializer
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
+    permission_classes = [AllowAny, ]
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid()
+        # exceptions
+        try:
+            user = authenticate(auth=serializer.data)
+            token, _ = Token.objects.get_or_create(user=user)
+        except AuthenticationFailed:  # exceptions 다른거
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+        return Response(UserSerializer(user).data, status.HTTP_200_OK)
