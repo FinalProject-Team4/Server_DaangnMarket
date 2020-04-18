@@ -1,14 +1,9 @@
-from collections import namedtuple
-from typing import Optional, List
-
 from drf_yasg import openapi
 from drf_yasg.app_settings import swagger_settings
 from drf_yasg.inspectors import SwaggerAutoSchema, SerializerInspector
 
+
 # Get Examples from Serializer
-from rest_framework.permissions import OperandHolder, SingleOperandHolder
-
-
 class ExampleInspector(SerializerInspector):
     def process_result(self, result, method_name, obj, **kwargs):
         has_examples = hasattr(obj, 'Meta') and hasattr(obj.Meta, 'examples')
@@ -54,7 +49,6 @@ class MyAutoSchema(SwaggerAutoSchema):
 
     def _get_permissions_description(self):
         permission_class = getattr(self.view, 'permission_classes', None)
-
         if permission_class:
             return f'\n**Permissions:** `{permission_class.pop().__name__}`'
         else:

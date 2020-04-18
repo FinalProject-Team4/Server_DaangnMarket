@@ -2,7 +2,7 @@ from django.db import models
 
 from location.models import Locate
 from members.models import User
-from core.models import TimeStampedModel as coreModel
+from core.models import TimeStampedModel as CoreModel
 
 POST_CHOICES = (
     # 디지털/가전
@@ -45,7 +45,7 @@ STATE_CHOICES = (
 )
 
 
-class Post(coreModel):
+class Post(CoreModel):
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, help_text='작성자')
     title = models.CharField(
