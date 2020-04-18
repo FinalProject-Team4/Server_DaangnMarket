@@ -24,7 +24,7 @@ def signup_view(request):
 
 
 @method_decorator(name='post', decorator=decorated_login_api)
-class Login(GenericAPIView):
+class LoginAPI(GenericAPIView):
     """
     로그인
     ### POST _/members/login/_
@@ -46,7 +46,7 @@ class Login(GenericAPIView):
 
 
 @method_decorator(name='post', decorator=decorated_signup_api)
-class SignUp(GenericAPIView):
+class SignUpAPI(GenericAPIView):
     """
     회원가입
 

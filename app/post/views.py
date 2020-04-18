@@ -5,19 +5,21 @@ from django.utils.decorators import method_decorator
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
-from django.contrib.gis.db.models.functions import Distance
 
+from django.contrib.gis.db.models.functions import Distance
+from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
-from rest_framework.permissions import IsAuthenticated
+
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.response import Response
 
 from rest_framework.parsers import MultiPartParser, JSONParser, FormParser
 
 from location.models import Locate
 from members.models import User
-from post.models import Post
+from post.models import Post, SearchedWord
 from post.serializers import PostListSerializer, PostDetailSerializer, PostCreateSerializer, PostImageUploadSerializer
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, get_object_or_404
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, get_object_or_404, GenericAPIView
 
 from post.swaggers import decorated_post_image_upload_api, decorated_post_create_api
 
@@ -101,6 +103,7 @@ class ApiPostListWithCate(ListAPIView):
     serializer_class = PostListSerializer
 
     def get_queryset(self):
+        # exceptions
         try:
             category = self.request.query_params.get('category')
             locate_id = self.request.query_params.get('locate')
@@ -111,25 +114,12 @@ class ApiPostListWithCate(ListAPIView):
         return objs
 
 
-# post detail
+# @@ 문서 정리
 class ApiPostDetail(RetrieveAPIView):
     """
-    post
+    게시글 상세 정보
 
-    ---
-    ## /post/detail/
-    ## Parameters
-        - post_id: 상세정보를 볼 post id값
-    ## 내용
-        - username: 작성자
-        - title: 게시글 제목
-        - content: 게시글 내용
-        - category: 상품 분류
-        - view_count: 조회수
-        - updated: 수정일
-        - postimage_set: 게시글에 있는 사진
-            - photo: 사진 파일 url
-            - post: 사진이 속해있는 게시판
+    ### GET /post/detail/
     """
     serializer_class = PostDetailSerializer
 
@@ -193,7 +183,7 @@ class ApiPostCreateLocate(CreateAPIView):
 # post edit
 
 @method_decorator(name='post', decorator=decorated_post_image_upload_api)
-class ApiPostImageUpload(CreateAPIView):
+class PostImageUploadAPI(CreateAPIView):
     """
     상품 이미지 업로드
 
@@ -203,26 +193,57 @@ class ApiPostImageUpload(CreateAPIView):
     serializer_class = PostImageUploadSerializer
     parser_classes = (MultiPartParser, FormParser, JSONParser)
 
-# class ApiSearch(ListAPIView):
-#     serializer_class = PostListSerializer
-#
-#     def get_queryset(self):
-#         word = self.request.query_params.get('word')
-#         txt_list = word.split()
-#         for txt in txt_list:
-#             w = RecommendWord.objects.get_or_create(content=txt)
-#             w.count = w.count + 1
-#             w.save()
-#         post_list = Post.objects.filter(
-#             Q(title__icontains=word) |
-#             Q(content__icontains=word)
-#         ).distinct().order_by('-created')
-#         return post_list
 
+class SearchAPI(ListAPIView):
+    """
+    게시물 검색
 
-# class ApiRecommendWord(ListAPIView):
-#     serializer_class = RecommendWordSerializer
-#
-#     def get_queryset(self):
-#         words = RecommendWord.objects.all().order_by('count')[:10]
-#         return words
+    ### GET /post/search/
+    """
+    queryset = Post.objects.all()
+    serializer_class = PostListSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        '''
+        user가 갖고 있는 'selected_locations_verified' 에서
+        'activated' 되어 있는 'locate'을 중심으로 'distance'값 안에 있는
+        모든 'locate'들이 갖고 있는 Post들 출력
+        '''
+
+        ret = []
+
+        user = self.request.user
+        if user.is_anonymous:
+            user = None
+
+        # 검색어 저장
+        word = self.request.query_params.get('word')
+        txt_list = word.split()
+
+        for txt in txt_list:
+            w, _ = SearchedWord.objects.get_or_create(user=user, content=txt)
+            w.count = w.count + 1
+            w.save()
+
+        # 유저가 갖고 있는 로케이션
+        for loc in user.selected_locations_verified.all():
+            if loc.activated:
+                user_select_location = loc
+                distance = str(user_select_location.distance)
+                pnt = user_select_location.locate.latlng
+
+                # 유저가 갖고 있는 로케이션의 범위네 로케이션들
+                locates = Locate.objects.filter(
+                    latlng__distance_lt=(pnt, D(m=distance)),
+                ).annotate(distance=Distance(pnt, 'latlng')).order_by('distance')
+
+                # 단어 검색
+                for L in locates:
+                    post_list = L.posts.filter(
+                        Q(title__icontains=word) |
+                        Q(content__icontains=word)
+                    ).distinct()
+                    ret += post_list
+
+        return ret

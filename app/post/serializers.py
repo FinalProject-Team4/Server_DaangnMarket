@@ -1,7 +1,6 @@
 from rest_framework import serializers
-from rest_framework.relations import StringRelatedField
 
-from post.models import Post, PostImage, RecommendWord
+from post.models import Post, PostImage
 
 
 # -> PostSerializer
@@ -106,8 +105,3 @@ class PostImageUploadSerializer(serializers.ModelSerializer):
             'photos': [{'photo': photo} for photo in data.getlist('photos')]
         }
         return ret
-
-# class RecommendWordSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = RecommendWord
-#         fields = ['content']

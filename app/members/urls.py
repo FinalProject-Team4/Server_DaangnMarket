@@ -8,6 +8,6 @@ urlpatterns = [
     path("front/", entry_view, name="front"),
     path("front_signup/", signup_view, name="signup_front"),
     # API
-    path("login/", Login.as_view(), name="login"),
-    path("signup/", SignUp.as_view(), name="signup"),
+    path("login/", LoginAPI.as_view(), name="login"),
+    path("signup/", SignUpAPI.as_view(), name="signup"),
 ]

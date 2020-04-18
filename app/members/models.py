@@ -20,7 +20,7 @@ class User(CoreModel, AbstractUser):
     phone = models.CharField(
         max_length=13, help_text='핸드폰 번호')
     selected_locations = models.ManyToManyField(
-        Locate, through='SelectedLocation', help_text='내 동네 선택')
+        Locate, through='SelectedLocation', related_name='users_select', help_text='내 동네 선택')
 
     # buyer_review =
     # seller_review =app
@@ -31,9 +31,13 @@ class User(CoreModel, AbstractUser):
 
 
 class SelectedLocation(CoreModel):
-    locate = models.ForeignKey(Locate, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    locate = models.ForeignKey(
+        Locate, related_name='selected_locations_verified', on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        User, related_name='selected_locations_verified', on_delete=models.CASCADE)
     verified = models.BooleanField(default=False)
+    activated = models.BooleanField(default=False)
+    distance = models.ImageField(default=1000)
 
     def clean(self):
         cnt = self.user.selected_locations.count()

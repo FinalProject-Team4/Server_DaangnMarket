@@ -1,9 +1,8 @@
 from django.contrib.gis.db.models.functions import Distance
-
 from django.contrib.gis.geos import Point
-from rest_framework import generics, status
-
 from django.contrib.gis.measure import D
+
+from rest_framework import generics, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 

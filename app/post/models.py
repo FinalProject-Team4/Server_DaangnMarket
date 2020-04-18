@@ -59,7 +59,7 @@ class Post(CoreModel):
     locate = models.ForeignKey(
         Locate, on_delete=models.CASCADE, help_text='거래 지역')
     showed_locate = models.ManyToManyField(
-        Locate, related_name='showed_locate', help_text='보여질 지역')
+        Locate, related_name='posts', help_text='보여질 지역')
     view_count = models.IntegerField(
         default=0, help_text='조회 수')
     state = models.CharField(
@@ -86,8 +86,6 @@ class PostImage(models.Model):
         upload_to=post_image_path, blank=True, help_text='상품 사진')
     post = models.ForeignKey(
         Post, on_delete=models.CASCADE, related_name='post_images', help_text='게시물 번호')
-    # author = models.ForeignKey(
-    #     User, on_delete=models.CASCADE, help_text='상품 올린 유저')
 
     class Meta:
         verbose_name = '이미지'
@@ -126,15 +124,17 @@ class PostReview(models.Model):
 
 
 # 검색어
-class RecommendWord(models.Model):
+class SearchedWord(CoreModel):
+    user = models.ForeignKey(
+        User, related_name='searched_words', blank=True, null=True, on_delete=models.CASCADE)
     content = models.CharField(
         max_length=100, help_text='추천 검색어')
     count = models.IntegerField(
         default=0, help_text='검색 횟수')
 
     class Meta:
-        verbose_name = '추천 검색어'
+        verbose_name = '검색어'
         verbose_name_plural = '%s 목록' % verbose_name
 
     def __str__(self):
-        return f'{self.content} 가 {self.count}번 검색되었습니다.'
+        return f'"{self.content}"가 {self.count}번 검색되었습니다.'
