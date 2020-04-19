@@ -85,7 +85,7 @@ class PostImage(models.Model):
     photo = models.ImageField(
         upload_to=post_image_path, blank=True, help_text='상품 사진')
     post = models.ForeignKey(
-        Post, on_delete=models.CASCADE, related_name='post_images', help_text='게시물 번호')
+        Post, on_delete=models.CASCADE, related_name='post_images', help_text='게시글 번호')
 
     class Meta:
         verbose_name = '이미지'
@@ -98,7 +98,7 @@ class PostImage(models.Model):
 # 관심
 class PostLike(models.Model):
     post = models.ForeignKey(
-        Post, on_delete=models.CASCADE, help_text='게시물 번호')
+        Post, on_delete=models.CASCADE, help_text='게시글 번호')
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, help_text='좋아요 누른 유저')
 

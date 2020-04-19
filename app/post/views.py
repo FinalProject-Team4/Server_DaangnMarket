@@ -15,21 +15,19 @@ from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, JSONParser, FormParser
 
 from location.models import Locate
-from post.filters import PostSearchFilter, PostFilter
+from post.filters import PostSearchFilter, PostFilter, PostDetailFilter
 from post.models import Post, SearchedWord
 from post.serializers import (
-    PostListSerializer,
-    PostDetailSerializer,
     PostCreateSerializer,
     PostImageUploadSerializer,
-    SearchedWordSerializer
-)
+    SearchedWordSerializer,
+    PostSerializer)
 from rest_framework.generics import (
     CreateAPIView,
     ListAPIView,
     RetrieveAPIView,
     get_object_or_404,
-)
+    GenericAPIView)
 
 from post.swaggers import (
     decorated_post_image_upload_api,
@@ -41,34 +39,36 @@ User = get_user_model()
 
 class ApiPostList(ListAPIView):
     """
-    게시물 조회 (+ 거래 동네, + 카테고리)
+    게시글 조회
 
-    ### GET /post/list/gps/
+    (+ 거래 동네, + 카테고리)
+    ### GET _/post/list/gps/_
     """
     queryset = Post.objects.all()
-    serializer_class = PostListSerializer
+    serializer_class = PostSerializer
     filter_class = PostFilter
     filter_backends = (DjangoFilterBackend, OrderingFilter)
     ordering = ('-updated',)
 
 
-# @@ 문서 정리
-class ApiPostDetail(RetrieveAPIView):
+class PostDetailAPI(GenericAPIView):
     """
     게시글 상세 정보
 
-    ### GET /post/detail/
+    ### GET _/post/detail/_
     """
-    serializer_class = PostDetailSerializer
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    filter_class = PostDetailFilter
+    pagination_class = None
 
-    def get_object(self):
-        pk = self.request.query_params.get('post_id', None)
-        if pk is None:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-        obj = get_object_or_404(Post, pk=pk)
-        obj.view_count = obj.view_count + 1
-        obj.save()
-        return obj
+    def get(self, request, *args, **kwargs):
+        # exceptions
+        post = self.filter_queryset(self.queryset)[0]
+        post.view_count += 1
+        post.save()
+        serializer = self.get_serializer(post)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @method_decorator(name='post', decorator=decorated_post_create_api)
@@ -134,12 +134,12 @@ class PostImageUploadAPI(CreateAPIView):
 
 class SearchAPI(ListAPIView):
     """
-    게시물 검색
+    게시글 검색
 
     ### GET /post/search/
     """
     queryset = Post.objects.all()
-    serializer_class = PostListSerializer
+    serializer_class = PostSerializer
     filter_class = PostSearchFilter
     filter_backends = (DjangoFilterBackend, OrderingFilter)
     ordering = ('-updated',)
@@ -147,7 +147,7 @@ class SearchAPI(ListAPIView):
 
 class SearchSaveAPI(CreateAPIView):
     """
-    게시물 검색 저장
+    게시글 검색 저장
 
     ### POST /post/search/save/
     """

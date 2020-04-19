@@ -11,7 +11,7 @@ decorated_post_image_upload_api = \
             required=['post_id', 'photos'],
             properties={
                 'post_id': openapi.Schema(
-                    description='게시물 번호',
+                    description='게시글 번호',
                     type=openapi.TYPE_INTEGER
                 ),
                 'photos': openapi.Schema(
@@ -37,7 +37,7 @@ decorated_post_image_upload_api = \
         tags=['post'],
     )
 
-# 게시물 생성
+# 게시글 생성
 decorated_post_create_api = \
     swagger_auto_schema(
         consumes='multipart/form-data',
