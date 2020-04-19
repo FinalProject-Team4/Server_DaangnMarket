@@ -43,6 +43,7 @@ DJANGO_APPS = [
 ]
 THIRD_PARTY_APPS = [
     'import_export',
+    'django_filters',
     'drf_yasg',
     'corsheaders',
     'push_notifications',

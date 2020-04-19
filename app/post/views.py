@@ -2,6 +2,7 @@ from django.db.models import Q
 from django.shortcuts import render
 from django.utils.datastructures import MultiValueDict
 from django.utils.decorators import method_decorator
+from django_filters.rest_framework import DjangoFilterBackend
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
@@ -9,6 +10,7 @@ from rest_framework.exceptions import ValidationError
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.response import Response
@@ -17,6 +19,7 @@ from rest_framework.parsers import MultiPartParser, JSONParser, FormParser
 
 from location.models import Locate
 from members.models import User
+from post.filters import PostWithLocateFilter
 from post.models import Post, SearchedWord
 from post.serializers import PostListSerializer, PostDetailSerializer, PostCreateSerializer, PostImageUploadSerializer
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, get_object_or_404, GenericAPIView
@@ -202,48 +205,50 @@ class SearchAPI(ListAPIView):
     """
     queryset = Post.objects.all()
     serializer_class = PostListSerializer
-    permission_classes = [AllowAny]
+    filter_class = PostWithLocateFilter
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
+    ordering = ('-updated',)
 
-    def get_queryset(self):
-        '''
-        user가 갖고 있는 'selected_locations_verified' 에서
-        'activated' 되어 있는 'locate'을 중심으로 'distance'값 안에 있는
-        모든 'locate'들이 갖고 있는 Post들 출력
-        '''
-
-        ret = []
-
-        user = self.request.user
-        if user.is_anonymous:
-            user = None
-
-        # 검색어 저장
-        word = self.request.query_params.get('word')
-        txt_list = word.split()
-
-        for txt in txt_list:
-            w, _ = SearchedWord.objects.get_or_create(user=user, content=txt)
-            w.count = w.count + 1
-            w.save()
-
-        # 유저가 갖고 있는 로케이션
-        for loc in user.selected_locations_verified.all():
-            if loc.activated:
-                user_select_location = loc
-                distance = str(user_select_location.distance)
-                pnt = user_select_location.locate.latlng
-
-                # 유저가 갖고 있는 로케이션의 범위네 로케이션들
-                locates = Locate.objects.filter(
-                    latlng__distance_lt=(pnt, D(m=distance)),
-                ).annotate(distance=Distance(pnt, 'latlng')).order_by('distance')
-
-                # 단어 검색
-                for L in locates:
-                    post_list = L.posts.filter(
-                        Q(title__icontains=word) |
-                        Q(content__icontains=word)
-                    ).distinct()
-                    ret += post_list
-
-        return ret
+    # def get_queryset(self):
+    #     '''
+    #     user가 갖고 있는 'selected_locations_verified' 에서
+    #     'activated' 되어 있는 'locate'을 중심으로 'distance'값 안에 있는
+    #     모든 'locate'들이 갖고 있는 Post들 출력
+    #     '''
+    #
+    #     ret = []
+    #
+    #     user = self.request.user
+    #     if user.is_anonymous:
+    #         user = None
+    #
+    #     # 검색어 저장
+    #     word = self.request.query_params.get('word')
+    #     txt_list = word.split()
+    #
+    #     for txt in txt_list:
+    #         w, _ = SearchedWord.objects.get_or_create(user=user, content=txt)
+    #         w.count = w.count + 1
+    #         w.save()
+    #
+    #     # 유저가 갖고 있는 로케이션
+    #     for loc in user.selected_locations_verified.all():
+    #         if loc.activated:
+    #             user_select_location = loc
+    #             distance = str(user_select_location.distance)
+    #             pnt = user_select_location.locate.latlng
+    #
+    #             # 유저가 갖고 있는 로케이션의 범위네 로케이션들
+    #             locates = Locate.objects.filter(
+    #                 latlng__distance_lt=(pnt, D(m=distance)),
+    #             ).annotate(distance=Distance(pnt, 'latlng')).order_by('distance')
+    #
+    #             # 단어 검색
+    #             for L in locates:
+    #                 post_list = L.posts.filter(
+    #                     Q(title__icontains=word) |
+    #                     Q(content__icontains=word)
+    #                 ).distinct()
+    #                 ret += post_list
+    #
+    #     return ret
