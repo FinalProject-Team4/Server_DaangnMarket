@@ -10,4 +10,5 @@ urlpatterns = [
     # API
     path("login/", LoginAPI.as_view(), name="login"),
     path("signup/", SignUpAPI.as_view(), name="signup"),
+    path("locate/", SetLocateAPI.as_view(), name="user_locations"),
 ]

@@ -35,11 +35,14 @@ class SelectedLocation(CoreModel):
         Locate, related_name='selected_locations_verified', on_delete=models.CASCADE)
     user = models.ForeignKey(
         User, related_name='selected_locations_verified', on_delete=models.CASCADE)
-    verified = models.BooleanField(default=False)
-    activated = models.BooleanField(default=False)
-    distance = models.ImageField(default=1000)
+    verified = models.BooleanField(
+        default=False, help_text='동네 인증 여부')
+    activated = models.BooleanField(
+        default=False, help_text='선택된 동네')
+    distance = models.IntegerField(
+        default=1000, help_text='동네 포함 범위')
 
     def clean(self):
-        cnt = self.user.selected_locations.count()
+        cnt = self.user.selected_locations_verified.count()
         if cnt > 2:
             raise ValidationError(f'{self.user.username}님은 이미 2개 선택 했습니다')

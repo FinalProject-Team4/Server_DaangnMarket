@@ -8,6 +8,9 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import AuthenticationFailed, ValidationError
 
+from location.models import Locate
+from members.models import SelectedLocation
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 
@@ -17,6 +20,7 @@ default_app = firebase_admin.initialize_app(cred)
 User = get_user_model()
 
 
+# 유저 모델
 class UserSerializer(serializers.ModelSerializer):
     avatar = serializers.ImageField(allow_empty_file=True)
     Authorization = serializers.SerializerMethodField(method_name='get_authorization')
@@ -46,6 +50,7 @@ class UserSerializer(serializers.ModelSerializer):
         return f'Token {obj.auth_token}'
 
 
+# 로그인
 class IdTokenSerializer(serializers.Serializer):
     id_token = serializers.CharField()
 
@@ -62,6 +67,7 @@ class IdTokenSerializer(serializers.Serializer):
         return instance
 
 
+# 회원 가입
 class SignUpSerializer(IdTokenSerializer):
     id_token = serializers.CharField()
     username = serializers.CharField()
@@ -77,3 +83,20 @@ class SignUpSerializer(IdTokenSerializer):
 
     def to_representation(self, instance):
         return instance
+
+
+# 내 동네 설정
+class SetLocateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SelectedLocation
+        fields = ('user', 'locate', 'distance', 'verified', 'activated')
+        examples = {
+            'user': 'test-user',
+            'locate': '6041',
+            'distance': '1000',
+        }
+
+    def validate(self, attrs):
+        instance = SelectedLocation(**attrs)
+        instance.clean()
+        return attrs

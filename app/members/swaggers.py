@@ -1,7 +1,7 @@
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
-from members.serializers import UserSerializer
+from members.serializers import UserSerializer, SetLocateSerializer
 
 decorated_login_api = \
     swagger_auto_schema(
@@ -42,4 +42,40 @@ decorated_signup_api = \
             ),
         },
         tags=['Users'],
+    )
+
+decorated_setlocate_api = \
+    swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['locate'],
+            properties={
+                'locate': openapi.Schema(
+                    description='동 ID',
+                    type=openapi.TYPE_INTEGER
+                ),
+                'distance': openapi.Schema(
+                    description='동네 포함 범위',
+                    type=openapi.TYPE_INTEGER,
+                    default=1000
+                ),
+                'verified': openapi.Schema(
+                    description='동네 인증 여부',
+                    type=openapi.TYPE_BOOLEAN,
+                    default=False
+                ),
+                'activated': openapi.Schema(
+                    description='선택된 동네',
+                    type=openapi.TYPE_BOOLEAN,
+                    default=False
+                )
+            }
+        ),
+        responses={
+            201: openapi.Response(
+                description='Success',
+                schema=SetLocateSerializer,
+            ),
+        },
+        tags=['User'],
     )
