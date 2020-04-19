@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from post.models import Post, PostImage
+from post.models import Post, PostImage, SearchedWord
 
 
 # -> PostSerializer
@@ -74,6 +74,7 @@ class PostImageListingField(serializers.RelatedField):
         return value.photo.url
 
 
+# 상품 이미지 업로드
 class PostImageUploadSerializer(serializers.ModelSerializer):
     post_id = serializers.CharField(
         source='id', help_text='게시물 번호')
@@ -105,3 +106,17 @@ class PostImageUploadSerializer(serializers.ModelSerializer):
             'photos': [{'photo': photo} for photo in data.getlist('photos')]
         }
         return ret
+
+
+# 게시물 검색 저장
+class SearchedWordSerializer(serializers.ModelSerializer):
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        w, _ = SearchedWord.objects.get_or_create(user=user, content=validated_data['content'])
+        w.count = w.count + 1
+        return w
+
+    class Meta:
+        model = SearchedWord
+        fields = ('content', 'count')

@@ -1,7 +1,6 @@
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
-from core.swagger_custom import ExampleInspector
 from post.views import *
 
 # 상품 이미지 업로드

@@ -7,9 +7,9 @@ from post.models import Post
 
 class PostWithLocateFilter(FilterSet):
     word = django_filters.CharFilter(
-        method='filter_word')
+        method='filter_word', required=True, help_text='검색어')
     locate = CharFilter(
-        field_name='showed_locate__id', lookup_expr='exact')
+        field_name='showed_locate__id', lookup_expr='exact', help_text='내 동네 설정')
 
     class Meta:
         model = Post
