@@ -41,7 +41,7 @@ User = get_user_model()
 
 class ApiPostList(ListAPIView):
     """
-    게시물 조회 (+ 거래 동네)
+    게시물 조회 (+ 거래 동네, + 카테고리)
 
     ### GET /post/list/gps/
     """
@@ -50,39 +50,6 @@ class ApiPostList(ListAPIView):
     filter_class = PostFilter
     filter_backends = (DjangoFilterBackend, OrderingFilter)
     ordering = ('-updated',)
-
-
-class ApiPostListWithCate(ListAPIView):
-    """
-    특정 카테고리의 Post 목록
-
-    ---
-    ## /post/list/category/
-    ## Parameters
-     - category: 분류 이름(ex ditital)
-    ## 내용
-        - username: 작성자
-        - title: 게시글 제목
-        - content: 게시글 내용
-        - category: 상품 분류
-        - view_count: 조회수
-        - updated: 수정일
-        - postimage_set: 게시글에 있는 사진
-            - photo: 사진 파일 url
-            - post: 사진이 속해있는 게시판
-    """
-    serializer_class = PostListSerializer
-
-    def get_queryset(self):
-        # exceptions
-        try:
-            category = self.request.query_params.get('category')
-            locate_id = self.request.query_params.get('locate')
-            locate = Locate.objects.get(id=locate_id)
-        except:
-            raise ValidationError(status=status.HTTP_400_BAD_REQUEST)
-        objs = Post.objects.filter(category=category, showed_locate=locate).order_by('-created')
-        return objs
 
 
 # @@ 문서 정리
