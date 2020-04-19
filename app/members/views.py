@@ -34,7 +34,7 @@ class LoginAPI(GenericAPIView):
     """
     로그인
 
-    ### _POST_ /members/login/
+    ### POST _/members/login/_
     """
     queryset = User.objects.all()
     serializer_class = IdTokenSerializer
@@ -57,7 +57,7 @@ class SignUpAPI(GenericAPIView):
     """
     회원 가입
 
-    ### _POST_ /members/signup/
+    ### POST _/members/signup/_
     """
     queryset = User.objects.all()
     serializer_class = SignUpSerializer

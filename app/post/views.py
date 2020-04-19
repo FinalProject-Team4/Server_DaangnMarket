@@ -15,7 +15,7 @@ from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, JSONParser, FormParser
 
 from location.models import Locate
-from post.filters import PostWithLocateFilter
+from post.filters import PostSearchFilter, PostFilter
 from post.models import Post, SearchedWord
 from post.serializers import (
     PostListSerializer,
@@ -41,59 +41,15 @@ User = get_user_model()
 
 class ApiPostList(ListAPIView):
     """
-    post 목록 조회
+    게시물 조회 (+ 거래 동네)
 
-    ---
-    ## /post/list/
-    ## 내용
-        - username: 작성자
-        - title: 게시글 제목
-        - content: 게시글 내용
-        - category: 상품 분류
-        - view_count: 조회수
-        - updated: 수정일
-        - postimage_set: 게시글에 있는 사진
-            - photo: 사진 파일 url
-            - post: 사진이 속해있는 게시판
+    ### GET /post/list/gps/
     """
+    queryset = Post.objects.all()
     serializer_class = PostListSerializer
-
-    def get_queryset(self):
-        return Post.objects.all().order_by('-created')
-
-
-class ApiPostListWithGPS(ListAPIView):
-    """
-    특정 지역의  post 목록 조회
-
-    ---
-    ## /post/list/gps/
-    ## Parameters
-        - locate: 동 id
-    ## 내용
-        - username: 작성자
-        - title: 게시글 제목
-        - content: 게시글 내용
-        - category: 상품 분류
-        - view_count: 조회수
-        - updated: 수정일
-        - postimage_set: 게시글에 있는 사진
-            - photo: 사진 파일 url
-            - post: 사진이 속해있는 게시판
-    """
-    serializer_class = PostListSerializer
-
-    def get_queryset(self):
-        try:
-            locate_id = self.request.query_params.get('locate')
-            print('locate_id : ', locate_id)
-            locate = Locate.objects.get(id=locate_id)
-            print('locate_id : ', locate_id)
-        except:
-            raise ValidationError(['HTTP_400_BAD_REQUEST'])
-
-        objs = Post.objects.filter(showed_locate=locate).order_by('-created')
-        return objs
+    filter_class = PostFilter
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
+    ordering = ('-updated',)
 
 
 class ApiPostListWithCate(ListAPIView):
@@ -217,7 +173,7 @@ class SearchAPI(ListAPIView):
     """
     queryset = Post.objects.all()
     serializer_class = PostListSerializer
-    filter_class = PostWithLocateFilter
+    filter_class = PostSearchFilter
     filter_backends = (DjangoFilterBackend, OrderingFilter)
     ordering = ('-updated',)
 

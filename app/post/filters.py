@@ -5,11 +5,11 @@ from django_filters.rest_framework import FilterSet, CharFilter
 from post.models import Post
 
 
-class PostWithLocateFilter(FilterSet):
+class PostSearchFilter(FilterSet):
     word = django_filters.CharFilter(
         method='filter_word', required=True, help_text='검색어')
     locate = CharFilter(
-        field_name='showed_locate__id', lookup_expr='exact', help_text='내 동네 설정')
+        field_name='showed_locate', lookup_expr='exact', help_text='내 동네 설정')
 
     class Meta:
         model = Post
@@ -19,3 +19,12 @@ class PostWithLocateFilter(FilterSet):
         return qs.filter(
             Q(title__icontains=value) | Q(content__icontains=value)
         )
+
+
+class PostFilter(FilterSet):
+    locate = CharFilter(
+        field_name='showed_locate', lookup_expr='exact', help_text='거래 동네(없을 시 게시물 전체)')
+
+    class Meta:
+        model = Post
+        fields = ['locate']

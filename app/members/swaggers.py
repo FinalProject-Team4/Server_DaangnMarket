@@ -77,5 +77,5 @@ decorated_setlocate_api = \
                 schema=SetLocateSerializer,
             ),
         },
-        tags=['User'],
+        tags=['Users'],
     )
