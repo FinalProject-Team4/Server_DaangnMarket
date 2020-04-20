@@ -19,12 +19,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='locate',
             name='dong',
-            field=models.CharField(help_text='동 이름(i.g. 성수동)', max_length=20),
+            field=models.CharField(help_text='동 이름(i.e. 성수동)', max_length=20),
         ),
         migrations.AlterField(
             model_name='locate',
             name='gu',
-            field=models.CharField(help_text='구 이름(i.g. 성동구)', max_length=20),
+            field=models.CharField(help_text='구 이름(i.e. 성동구)', max_length=20),
         ),
         migrations.AlterField(
             model_name='locate',

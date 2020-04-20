@@ -5,9 +5,9 @@ from django.contrib.gis.geos import Point
 
 class Locate(models.Model):
     dong = models.CharField(
-        max_length=20, help_text='동 이름(i.g. 성수동)')
+        max_length=20, help_text='동 이름(i.e. 성수동)')
     gu = models.CharField(
-        max_length=20, help_text='구 이름(i.g. 성동구)')
+        max_length=20, help_text='구 이름(i.e. 성동구)')
     address = models.CharField(
         max_length=100, help_text='도로명 주소')
     longitude = models.DecimalField(
