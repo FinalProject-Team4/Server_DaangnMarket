@@ -104,7 +104,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Auth User model
 AUTH_USER_MODEL = 'members.User'
-USER_MODEL = 'members.User'
 
 AUTHENTICATION_BACKENDS = [
     'core.my_auth.UserBackend',
@@ -147,5 +146,6 @@ SWAGGER_SETTINGS = {
 
 # Django Push Notification
 PUSH_NOTIFICATIONS_SETTINGS = {
+    'USER_MODEL': AUTH_USER_MODEL,
     'FCM_API_KEY': 'AAAAFTwNi8I:APA91bGm57yBulML3oQEPQSezorzYzoyIr5v8YRmk4akotEFjxjInMnzmTwOVrl7DLCpQQiXifjrpB3nlFqT3H2hS9QBny25SCq8WuqV-xbIBcCuOgeiBpL_iDQBWbL1hfoLh1DiPmg-',
 }
