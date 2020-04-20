@@ -25,14 +25,11 @@ from post.serializers import (
 from rest_framework.generics import (
     CreateAPIView,
     ListAPIView,
-    RetrieveAPIView,
-    get_object_or_404,
     GenericAPIView)
 
 from post.swaggers import (
     decorated_post_image_upload_api,
-    decorated_post_create_api,
-)
+    decorated_post_create_api)
 
 User = get_user_model()
 

@@ -8,7 +8,7 @@ class PostSearchFilter(FilterSet):
     word = CharFilter(
         method='filter_word', required=True, help_text='검색어')
     locate = CharFilter(
-        field_name='showed_locate', lookup_expr='exact', help_text='내 동네 설정')
+        method='filter_locate', help_text='내 동네 설정')
 
     class Meta:
         model = Post
@@ -18,6 +18,10 @@ class PostSearchFilter(FilterSet):
         return qs.filter(
             Q(title__icontains=value) | Q(content__icontains=value)
         )
+
+    def filter_locate(self, qs, name, value):
+        locates = [L for L in value.strip().split(',') if L]
+        return qs.filter(showed_locate__in=locates)
 
 
 class PostFilter(FilterSet):
