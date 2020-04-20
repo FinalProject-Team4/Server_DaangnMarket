@@ -1,33 +1,9 @@
 from rest_framework import serializers
-from rest_framework.relations import StringRelatedField
 
-from post.models import Post, PostImage, RecommendWord
-
-
-# -> PostSerializer
-class PostListSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source='author.username')
-    address = serializers.CharField(source='locate.dong')
-
-    class Meta:
-        model = Post
-        depth = 1
-        fields = (
-            'id',
-            'username',
-            'title',
-            'content',
-            'category',
-            'view_count',
-            'updated',
-            'address',
-            'price',
-            'state',
-            'post_images',
-        )
+from post.models import Post, PostImage, SearchedWord
 
 
-class PostDetailSerializer(serializers.ModelSerializer):
+class PostSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='author.username')
     address = serializers.CharField(source='locate.dong')
 
@@ -51,7 +27,7 @@ class PostDetailSerializer(serializers.ModelSerializer):
 
 class PostCreateSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(
-        read_only=True, help_text='게시물 번호')
+        read_only=True, help_text='게시글 번호')
 
     class Meta:
         model = Post
@@ -75,9 +51,10 @@ class PostImageListingField(serializers.RelatedField):
         return value.photo.url
 
 
+# 상품 이미지 업로드
 class PostImageUploadSerializer(serializers.ModelSerializer):
     post_id = serializers.CharField(
-        source='id', help_text='게시물 번호')
+        source='id', help_text='게시글 번호')
     photos = PostImageListingField(
         source='post_images', queryset=PostImage.objects.all(), many=True, help_text='상품 이미지 URIs')
 
@@ -107,7 +84,16 @@ class PostImageUploadSerializer(serializers.ModelSerializer):
         }
         return ret
 
-# class RecommendWordSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = RecommendWord
-#         fields = ['content']
+
+# 게시글 검색 저장
+class SearchedWordSerializer(serializers.ModelSerializer):
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        w, _ = SearchedWord.objects.get_or_create(user=user, content=validated_data['content'])
+        w.count = w.count + 1
+        return w
+
+    class Meta:
+        model = SearchedWord
+        fields = ('content', 'count')

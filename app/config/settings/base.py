@@ -21,6 +21,10 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
+
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
 }
@@ -39,6 +43,7 @@ DJANGO_APPS = [
 ]
 THIRD_PARTY_APPS = [
     'import_export',
+    'django_filters',
     'drf_yasg',
     'corsheaders',
     'push_notifications',
@@ -101,9 +106,14 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTH_USER_MODEL = 'members.User'
 USER_MODEL = 'members.User'
 
+AUTHENTICATION_BACKENDS = [
+    'core.my_auth.UserBackend',
+    # 'django.contrib.auth.backends.ModelBackend',
+]
+
 # Internationalization
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ko-kr'
 
 TIME_ZONE = 'Asia/Seoul'
 
