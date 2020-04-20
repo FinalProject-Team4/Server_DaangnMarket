@@ -9,7 +9,7 @@ class Notification(models.Model):
         GCMDevice, on_delete=models.CASCADE, related_name='noti_receiver')
 
     title = models.CharField(
-        max_length=200, help_text='알림 제목')
+        max_length=200, help_text='알림 제목', null=True, blank=True)
     subtitle = models.CharField(
         max_length=200, blank=True, help_text='알림 부제목')
     body = models.CharField(
