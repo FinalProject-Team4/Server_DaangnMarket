@@ -97,7 +97,7 @@ class SearchedWordSerializer(serializers.ModelSerializer):
     class Meta:
         model = SearchedWord
         fields = ('content', 'count')
-
+        
 
 class PostLikeSerializer(serializers.ModelSerializer):
     class Meta:
