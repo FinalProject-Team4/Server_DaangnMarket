@@ -92,14 +92,14 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='postimage',
             name='post',
-            field=models.ForeignKey(help_text='게시물 번호', on_delete=django.db.models.deletion.CASCADE, related_name='post_images', to='post.Post'),
+            field=models.ForeignKey(help_text='게시글 번호', on_delete=django.db.models.deletion.CASCADE, related_name='post_images', to='post.Post'),
         ),
         migrations.CreateModel(
             name='PostLike',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('author', models.ForeignKey(help_text='좋아요 누른 유저', on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('post', models.ForeignKey(help_text='게시물 번호', on_delete=django.db.models.deletion.CASCADE, to='post.Post')),
+                ('post', models.ForeignKey(help_text='게시글 번호', on_delete=django.db.models.deletion.CASCADE, to='post.Post')),
             ],
             options={
                 'verbose_name': '관심',

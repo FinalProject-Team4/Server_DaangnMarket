@@ -1,7 +1,7 @@
 from django.contrib import admin
 from import_export.admin import ImportExportMixin
 
-from post.models import Post, PostImage, RecommendWord, PostLike
+from post.models import Post, PostImage, PostLike
 
 
 @admin.register(Post)

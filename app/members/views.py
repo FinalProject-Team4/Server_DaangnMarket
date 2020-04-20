@@ -1,13 +1,22 @@
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
 from django.shortcuts import render
+from django.utils.decorators import method_decorator
+from rest_framework import status
 from rest_framework.authtoken.models import Token
-from rest_framework.generics import GenericAPIView
+from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.generics import GenericAPIView, CreateAPIView
 from rest_framework.parsers import FormParser, MultiPartParser, JSONParser
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
-from members.serializers import *
-
+from members.models import SelectedLocation
+from members.serializers import (
+    IdTokenSerializer,
+    UserSerializer,
+    SignUpSerializer,
+    SetLocateSerializer
+)
+from members.swaggers import decorated_login_api, decorated_signup_api, decorated_setlocate_api
 
 User = get_user_model()
 
@@ -20,47 +29,66 @@ def signup_view(request):
     return render(request, "sign_up.html")
 
 
-class FirebaseLogin(GenericAPIView):
+@method_decorator(name='post', decorator=decorated_login_api)
+class LoginAPI(GenericAPIView):
+    """
+    로그인
+
+    ### POST _/members/login/_
+    """
     queryset = User.objects.all()
-    serializer_class = LoginSerializer
+    serializer_class = IdTokenSerializer
+    permission_classes = [AllowAny]
 
     def post(self, request):
-        id_token = request.data.get('idToken', None)
-
-        if not id_token:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
+        # exceptions
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid()
         try:
-            decoded_token = auth.verify_id_token(id_token)
-            uid = decoded_token['uid']
-            user = User.objects.get_or_none(uid=uid)
-            if not user:
-                raise ValueError
-        except ValueError:
+            user = authenticate(request, auth=serializer.data)
+        except AuthenticationFailed:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+        return Response(UserSerializer(user).data, status.HTTP_200_OK)
 
 
-class SignUp(APIView):
-    parser_classes = (JSONParser, FormParser, MultiPartParser)
+@method_decorator(name='post', decorator=decorated_signup_api)
+class SignUpAPI(GenericAPIView):
+    """
+    회원 가입
+
+    ### POST _/members/signup/_
+    """
+    queryset = User.objects.all()
+    serializer_class = SignUpSerializer
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
+    permission_classes = [AllowAny]
 
     def post(self, request):
-
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid()
+        # exceptions
         try:
-            id_token = request.data.get('idToken', None)
-            decoded_token = auth.verify_id_token(id_token)
-        except ValueError:
+            user = authenticate(auth=serializer.data)
+            token, _ = Token.objects.get_or_create(user=user)
+        except AuthenticationFailed:  # exceptions 다른거
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        uid = decoded_token['uid']
-        user_data = {
-            'phone': decoded_token['phone_number'],
-            'username': request.data.get('username', None),
-            'avatar': request.data.get('avatar', None)
-        }
+        return Response(UserSerializer(user).data, status.HTTP_200_OK)
 
-        user, created = User.objects.update_or_create(defaults=user_data, uid=uid)
-        token, _ = Token.objects.get_or_create(user=user)
 
-        return Response(UserSerializer(user).data, status=status.HTTP_200_OK)
+@method_decorator(name='post', decorator=decorated_setlocate_api)
+class SetLocateAPI(CreateAPIView):
+    """
+    내 동네 설정
+
+    ### POST _/members/locate/_
+    """
+    queryset = SelectedLocation.objects.all()
+    serializer_class = SetLocateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_serializer(self, *args, **kwargs):
+        serializer = super(SetLocateAPI, self).get_serializer(*args, **kwargs)
+        serializer.initial_data['user'] = self.request.user.pk
+        return serializer
