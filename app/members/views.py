@@ -82,7 +82,7 @@ class SetLocateAPI(CreateAPIView):
     """
     내 동네 설정
 
-    ### _POST_ /members/locate/
+    ### POST _/members/locate/_
     """
     queryset = SelectedLocation.objects.all()
     serializer_class = SetLocateSerializer

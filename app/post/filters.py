@@ -8,7 +8,7 @@ class PostSearchFilter(FilterSet):
     word = CharFilter(
         method='filter_word', required=True, help_text='검색어')
     locate = CharFilter(
-        method='filter_locate', help_text='내 동네 설정')
+        method='filter_locate', help_text='내 동네 설정 e.g. ?locate=1011,6971,2341')
 
     class Meta:
         model = Post
