@@ -1,7 +1,6 @@
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
-from core.swagger_custom import ExampleInspector
 from post.views import *
 
 # 상품 이미지 업로드
@@ -12,7 +11,7 @@ decorated_post_image_upload_api = \
             required=['post_id', 'photos'],
             properties={
                 'post_id': openapi.Schema(
-                    description='게시물 번호',
+                    description='게시글 번호',
                     type=openapi.TYPE_INTEGER
                 ),
                 'photos': openapi.Schema(
@@ -35,12 +34,10 @@ decorated_post_image_upload_api = \
                 description='Bad Request',
             )
         },
-        field_inspectors=[ExampleInspector],
-        security=[],
         tags=['post'],
     )
 
-# 게시물 생성
+# 게시글 생성
 decorated_post_create_api = \
     swagger_auto_schema(
         consumes='multipart/form-data',

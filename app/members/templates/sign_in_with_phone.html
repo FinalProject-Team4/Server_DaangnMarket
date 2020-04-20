@@ -61,8 +61,9 @@
                 .catch(error => console.log("!! firebase error : " + error))
                 .then((idToken) => {
                     var data = {
-                        "idToken": idToken
+                        "id_token": idToken
                     };
+                    console.log(JSON.stringify(data));
                     return fetch(`/members/login/`, {
                         method: 'POST',
                         mode: 'cors',
