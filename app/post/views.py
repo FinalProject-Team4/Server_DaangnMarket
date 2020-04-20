@@ -16,12 +16,12 @@ from rest_framework.parsers import MultiPartParser, JSONParser, FormParser
 
 from location.models import Locate
 from post.filters import PostSearchFilter, PostFilter, PostDetailFilter
-from post.models import Post, SearchedWord
+from post.models import Post, SearchedWord, PostLike
 from post.serializers import (
     PostCreateSerializer,
     PostImageUploadSerializer,
     SearchedWordSerializer,
-    PostSerializer)
+    PostSerializer, PostLikeSerializer)
 from rest_framework.generics import (
     CreateAPIView,
     ListAPIView,
@@ -151,3 +151,31 @@ class SearchSaveAPI(CreateAPIView):
     queryset = SearchedWord.objects.all()
     serializer_class = SearchedWordSerializer
     permission_classes = [IsAuthenticated]
+
+
+class PostLikeSave(CreateAPIView):
+    serializer_class = PostLikeSerializer
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        post_id = request.data['post_id']
+        post = Post.objects.get(pk=post_id)
+        post_like_qs = PostLike.objects.filter(post=post, author=user)
+        if post_like_qs.exists():
+            post_like_qs.delete()
+            return Response(status=status.HTTP_200_OK)
+        else:
+            like = PostLike.objects.create(post=post, author=user)
+            serializer = self.get_serializer(like)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class PostLikeList(ListAPIView):
+    serializer_class = PostLikeSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        list = PostLike.objects.filter(author=user)
+        return list

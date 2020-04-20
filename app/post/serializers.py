@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from post.models import Post, PostImage, SearchedWord
+from post.models import Post, PostImage, SearchedWord, PostLike
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -97,3 +97,13 @@ class SearchedWordSerializer(serializers.ModelSerializer):
     class Meta:
         model = SearchedWord
         fields = ('content', 'count')
+
+
+class PostLikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostLike
+        fields = (
+            'author',
+            'post',
+        )
+
