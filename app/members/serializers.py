@@ -100,3 +100,8 @@ class SetLocateSerializer(serializers.ModelSerializer):
         instance = SelectedLocation(**attrs)
         instance.clean()
         return attrs
+
+    def to_representation(self, instance):
+        ret = super(SetLocateSerializer, self).to_representation(instance)
+        ret['user'] = instance.user.username
+        return ret
