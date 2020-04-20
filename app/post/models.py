@@ -2,6 +2,7 @@ from django.db import models
 
 from location.models import Locate
 from members.models import User
+
 from core.models import TimeStampedModel as CoreModel
 
 POST_CHOICES = (
@@ -64,6 +65,10 @@ class Post(CoreModel):
         default=0, help_text='조회 수')
     state = models.CharField(
         choices=STATE_CHOICES, max_length=10, default='sales', help_text='주문 상태')
+
+    like_users = models.ManyToManyField(
+        User, through='PostLike', related_name='like_post_set',
+    )
 
     class Meta:
         verbose_name = '게시글'
@@ -138,3 +143,4 @@ class SearchedWord(CoreModel):
 
     def __str__(self):
         return f'"{self.content}"가 {self.count}번 검색되었습니다.'
+      
