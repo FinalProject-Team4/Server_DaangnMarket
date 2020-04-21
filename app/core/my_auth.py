@@ -12,8 +12,8 @@ User = get_user_model()
 class UserBackend(object):
     def authenticate(self, request, auth=None):
         data = {
-            'uid': auth['uid'],
-            'phone': auth['phone_number'],
+            'uid': auth.get('uid'),
+            'phone': auth.get('phone_number'),
             'username': auth.get('username', None),
             'avatar': auth.get('avatar', None)
         }
