@@ -2,14 +2,15 @@ from rest_framework import serializers
 
 from location.filters import LocationFilter
 from location.models import Locate
-from location.serializers import LocateSerializer
 from post.models import Post, PostImage, SearchedWord, PostLike
 
 
 class PostSerializer(serializers.ModelSerializer):
-    showed_locate = LocateSerializer(
-        read_only=True, many=True, help_text="보여지는 동 ID")
-    # photos = serializers.StringRelatedField(source='post_images', read_only=True, many=True, help_text='상품 사진')
+    photos = serializers.StringRelatedField(
+        source='post_images', read_only=True,  many=True, help_text='상품 사진')
+    showed_locates = serializers.PrimaryKeyRelatedField(
+        read_only=True,  many=True, help_text='포스트 될 동네 ID'
+    )
 
     class Meta:
         model = Post
@@ -23,9 +24,9 @@ class PostSerializer(serializers.ModelSerializer):
             'view_count',
             'updated',
             'price',
-            'showed_locate',
+            'showed_locates',
             'state',
-            'post_images',
+            'photos',
         )
         read_only_fields = ('id', 'username', 'updated', 'view_count')
 
@@ -43,15 +44,8 @@ class PostCreateSerializer(PostSerializer):
         }
         locates = LocationFilter(data=locate_data)
         locates.is_valid()
-        attrs['showed_locate'] = locates.filter_queryset(Locate.objects.all())
+        attrs['showed_locates'] = locates.filter_queryset(Locate.objects.all())
         return attrs
-
-    # def create(self, validated_data):
-    #     post = super(PostCreateSerializer, self).create(validated_data)
-    #     photos = validated_data.pop('photos')
-    #     for photo in photos:
-    #         PostImage.objects.create(post=post, **photo)
-    #     return post
 
     class Meta(PostSerializer.Meta):
         model = Post
@@ -80,14 +74,6 @@ class PostImageUploadSerializer(serializers.ModelSerializer):
                 'https://img_server.com/post_images/post_3/elsa.jpeg',
             ]
         }
-
-    def create(self, validated_data):
-        post_id = validated_data['post_id']
-        photos = validated_data.pop('photos')
-        post = Post.objects.get(id=post_id)
-        for photo in photos:
-            PostImage.objects.create(post=post, **photo)
-        return post
 
     def to_internal_value(self, data):
         ret = {

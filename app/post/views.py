@@ -15,7 +15,7 @@ from rest_framework.generics import (
     GenericAPIView
 )
 
-from post.models import Post, SearchedWord, PostLike
+from post.models import Post, SearchedWord, PostLike, PostImage
 from post.serializers import (
     PostCreateSerializer,
     PostImageUploadSerializer,
@@ -77,7 +77,10 @@ class PostCreateAPI(CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        post = serializer.save(author=self.request.user)
+        photos = self.request.data.getlist('photos')
+        for photo in photos:
+            PostImage.objects.create(post=post, photo=photo)
 
 
 # TODO: post edit

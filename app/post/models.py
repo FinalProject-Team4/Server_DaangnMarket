@@ -57,7 +57,7 @@ class Post(CoreModel):
         choices=POST_CHOICES, max_length=20, help_text='카테고리')
     price = models.IntegerField(
         default=0, help_text='가격')
-    showed_locate = models.ManyToManyField(
+    showed_locates = models.ManyToManyField(
         Locate, related_name='posts', blank=True, help_text='보여질 지역')
     view_count = models.IntegerField(
         default=0, help_text='조회 수')
