@@ -25,7 +25,7 @@ from post.serializers import (
 from rest_framework.generics import (
     CreateAPIView,
     ListAPIView,
-    GenericAPIView)
+    GenericAPIView, UpdateAPIView)
 
 from post.swaggers import (
     decorated_post_image_upload_api,
@@ -66,6 +66,31 @@ class PostDetailAPI(GenericAPIView):
         post.save()
         serializer = self.get_serializer(post)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ApiPostUpdate(UpdateAPIView):
+    serializer_class = PostSerializer
+
+    def update(self, request, *args, **kwargs):
+        post_id = request.data.get('post_id')
+        state = request.data.get('state')
+        post = Post.objects.get(pk=post_id)
+        post.state = state
+        serializer = self.serializer_class(post)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ApiPostListOther(ListAPIView):
+    serializer_class = PostSerializer
+
+    def get_queryset(self):
+        post_id = self.request.query_params.get('post_id', 0)
+        post = Post.objects.get(pk=post_id)
+        list = Post.objects.filter(author=post.author)
+        return list
 
 
 @method_decorator(name='post', decorator=decorated_post_create_api)
@@ -179,3 +204,5 @@ class PostLikeList(ListAPIView):
         user = self.request.user
         list = PostLike.objects.filter(author=user)
         return list
+
+
