@@ -50,7 +50,7 @@ decorated_setlocate_api = \
             type=openapi.TYPE_OBJECT,
             required=['locate'],
             properties={
-                'locate': openapi.Schema(
+                'dong_id': openapi.Schema(
                     description='동 ID',
                     type=openapi.TYPE_INTEGER
                 ),
