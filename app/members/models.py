@@ -34,7 +34,7 @@ class User(CoreModel, AbstractUser):
 
 
 class SelectedLocation(CoreModel):
-    locate = models.ForeignKey(
+    dong_id = models.ForeignKey(
         Locate, related_name='selected_locations_verified', on_delete=models.CASCADE)
     user = models.ForeignKey(
         User, related_name='selected_locations_verified', on_delete=models.CASCADE)

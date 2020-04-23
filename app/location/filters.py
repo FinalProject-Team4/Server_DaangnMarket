@@ -1,5 +1,9 @@
+from decimal import Decimal
+
 from django.contrib.gis.db.models.functions import Distance
+from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
+from django.http import QueryDict
 
 from django_filters.rest_framework import FilterSet, CharFilter, NumberFilter
 
@@ -18,6 +22,31 @@ class LocationDistanceFilter(FilterSet):
 
     def filter_distance(self, qs, name, value):
         pnt = qs.get().latlng
+        distance = self.data['distance']
+        ret = Locate.objects.filter(
+            latlng__distance_lt=(pnt, D(m=distance)),
+        ).annotate(distance=Distance(pnt, 'latlng')).order_by('distance')
+        return ret
+
+
+class LocationLatLngFilter(FilterSet):
+    lati = NumberFilter(
+        method='filter_distance', required=True, help_text='위도')
+    longi = NumberFilter(
+        method='filter_distance', required=True, help_text='경도')
+    distance = CharFilter(
+        method='filter_distance', required=True, help_text='범위')
+
+    class Meta:
+        model = Locate
+        fields = ['longi', 'lati', 'distance']
+
+    def filter_distance(self, qs, name, value):
+        if name in ['lati', 'longi']:
+            self.data._mutable = True
+            self.data[name] = float(value)
+            return qs
+        pnt = Point(self.data['longi'], self.data['lati'])
         distance = self.data['distance']
         ret = Locate.objects.filter(
             latlng__distance_lt=(pnt, D(m=distance)),

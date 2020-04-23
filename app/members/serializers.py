@@ -77,7 +77,7 @@ class SignUpSerializer(IdTokenSerializer):
 class SetLocateSerializer(serializers.ModelSerializer):
     class Meta:
         model = SelectedLocation
-        fields = ('user', 'locate', 'distance', 'verified', 'activated')
+        fields = ('user', 'dong_id', 'distance', 'verified', 'activated')
         examples = {
             'user': 'test-user',
             'locate': '6041',
