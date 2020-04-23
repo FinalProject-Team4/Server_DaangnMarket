@@ -8,7 +8,9 @@ from post.views import (
     PostImageUploadAPI,
     SearchAPI,
     SearchSaveAPI,
-    PostLikeList
+    PostLikeList,
+    ApiPostListOther,
+    ApiPostUpdate
 )
 
 app_name = 'post'
