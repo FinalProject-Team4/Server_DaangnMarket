@@ -143,4 +143,5 @@ class SearchedWord(CoreModel):
 
     def __str__(self):
         return f'"{self.content}"가 {self.count}번 검색되었습니다.'
-      
+
+
