@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from config.settings import fb_auth
+from config.settings.base import fb_auth
 from rest_framework import serializers, status
 from rest_framework.response import Response
 
