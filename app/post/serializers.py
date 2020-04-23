@@ -98,8 +98,11 @@ class SearchedWordSerializer(serializers.ModelSerializer):
 
 
 class PostLikeSerializer(serializers.ModelSerializer):
+    author = serializers.CharField(source='author.username')
+
     class Meta:
         model = PostLike
+        depth = 1
         fields = (
             'author',
             'post',

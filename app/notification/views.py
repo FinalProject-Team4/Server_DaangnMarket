@@ -13,7 +13,7 @@ from members.models import User
 
 # device 등록
 from notification.models import Notification
-from notification.serializers import NotificationSerializer
+from notification.serializers import NotificationSerializer, NotificationNoticeSerializer
 
 
 class ApiFcmDeviceRegister(CreateAPIView):
@@ -59,7 +59,7 @@ class ApiSendFcm(CreateAPIView):
 
 # 알림 발송
 class ApiSendNotice(CreateAPIView):
-    serializer_class = NotificationSerializer
+    serializer_class = NotificationNoticeSerializer
     authentication_classes = [TokenAuthentication]
 
     def create(self, request, *args, **kwargs):
@@ -77,10 +77,33 @@ class ApiSendNotice(CreateAPIView):
                 if notification.title == '':
                     receiver.send_message(notification.body)
                 else:
-                    receiver.send_message(notification.body, extra={"title": notification.title})
+                    receiver.send_message(notification.body,
+                                          extra={"title": notification.title, "type": "notice"},
+                                          badge=1)
             return Response(status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# 채팅 알림 발송
+class ApiSendChat(CreateAPIView):
+    serializer_class = NotificationSerializer
+    authentication_classes = [TokenAuthentication]
+
+    def create(self, request, *args, **kwargs):
+        user = self.request.user
+        receiver_username = request.data.get('receiver')
+        sender = GCMDevice.objects.get(name=user.username)
+        receiver = GCMDevice.objects.get(name=receiver_username)
+        notification = Notification.objects.create(sender=sender,
+                                                   receiver=receiver,
+                                                   title='채팅 알람이 들어왔습니다.',
+                                                   body='채팅을 확인해주세요.',
+                                                   type='chat',)
+        receiver.send_message(notification.body,
+                              extra={"title": notification.title, "type": "chat"},
+                              badge=1)
+        return Response(status=status.HTTP_200_OK)
 
 
 # 알림 리스트 가져오기
@@ -90,7 +113,7 @@ class ApiListNotice(ListAPIView):
     def get_queryset(self):
         user = self.request.user
         receiver = GCMDevice.objects.get(name=user.username)
-        notifications = Notification.objects.filter(receiver=receiver)
+        notifications = Notification.objects.filter(receiver=receiver, type='notice')
         return notifications
 
 

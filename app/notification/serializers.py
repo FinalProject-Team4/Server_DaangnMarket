@@ -15,3 +15,13 @@ class NotificationSerializer(serializers.ModelSerializer):
         fields = (
             'sender', 'receiver', 'title', 'body',
         )
+
+
+class NotificationNoticeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Notification
+        depth = 0
+        fields = (
+            'title', 'body',
+        )
