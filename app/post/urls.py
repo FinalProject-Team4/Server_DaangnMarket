@@ -16,8 +16,8 @@ urlpatterns = [
     # TODO : viewset 으로 분리
     path('search/', SearchAPI.as_view()),
     path('search/save/', SearchSaveAPI.as_view()),
+  
     # TODO :
     path('like/', PostLikeSave.as_view()),
     path('like/list/', PostLikeList.as_view()),
-
 ]

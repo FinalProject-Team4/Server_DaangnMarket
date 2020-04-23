@@ -22,11 +22,11 @@ User = get_user_model()
 
 
 def entry_view(request):
-    return render(request, "sign_in_with_phone.html")
+    return render(request, "members/sign_in_with_phone.html")
 
 
 def signup_view(request):
-    return render(request, "sign_up.html")
+    return render(request, "members/sign_up.html")
 
 
 @method_decorator(name='post', decorator=decorated_login_api)
