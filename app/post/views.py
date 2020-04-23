@@ -14,6 +14,7 @@ from rest_framework.response import Response
 
 from rest_framework.parsers import MultiPartParser, JSONParser, FormParser
 
+from config.c import LargeResultsSetPagination
 from location.models import Locate
 from post.filters import PostSearchFilter, PostFilter, PostDetailFilter
 
@@ -88,6 +89,7 @@ class ApiPostUpdate(UpdateAPIView):
 
 class ApiPostListOther(ListAPIView):
     serializer_class = PostSerializer
+    pagination_class = LargeResultsSetPagination
 
     def get_queryset(self):
         post_id = self.request.query_params.get('post_id', 0)

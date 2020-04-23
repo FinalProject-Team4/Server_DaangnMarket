@@ -14,6 +14,9 @@ class Notification(models.Model):
         max_length=200, blank=True, help_text='알림 부제목')
     body = models.CharField(
         max_length=200, help_text='알림 내용')
+    type = models.CharField(
+        default='notice', max_length=10
+    )
     is_succeed = models.BooleanField(
         default=False, help_text='알림 성공 여부')
 

@@ -98,7 +98,8 @@ class ApiSendChat(CreateAPIView):
         notification = Notification.objects.create(sender=sender,
                                                    receiver=receiver,
                                                    title='채팅 알람이 들어왔습니다.',
-                                                   body='채팅을 확인해주세요.')
+                                                   body='채팅을 확인해주세요.',
+                                                   type='chat',)
         receiver.send_message(notification.body,
                               extra={"title": notification.title, "type": "chat"},
                               badge=1)
@@ -112,7 +113,7 @@ class ApiListNotice(ListAPIView):
     def get_queryset(self):
         user = self.request.user
         receiver = GCMDevice.objects.get(name=user.username)
-        notifications = Notification.objects.filter(receiver=receiver)
+        notifications = Notification.objects.filter(receiver=receiver, type='notice')
         return notifications
 
 
