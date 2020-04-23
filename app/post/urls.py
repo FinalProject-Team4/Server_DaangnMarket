@@ -18,7 +18,8 @@ urlpatterns = [
     path('list/', PostListAPI.as_view()),
     path('detail/', PostDetailAPI.as_view()),
     path('create/', PostCreateAPI.as_view()),
-    path('image/upload/', PostImageUploadAPI.as_view()),
+    # path('image/upload/', PostImageUploadAPI.as_view()),
+
     # 판매자의 다른 상품
     path('other/', ApiPostListOther.as_view()),
     # 판매 상품 상태 변경
