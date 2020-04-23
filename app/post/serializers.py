@@ -1,11 +1,16 @@
 from rest_framework import serializers
 
+from location.filters import LocationFilter
+from location.models import Locate
 from post.models import Post, PostImage, SearchedWord, PostLike
 
 
 class PostSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source='author.username')
-    address = serializers.CharField(source='locate.dong')
+    photos = serializers.StringRelatedField(
+        source='post_images', read_only=True,  many=True, help_text='상품 사진')
+    showed_locates = serializers.PrimaryKeyRelatedField(
+        read_only=True,  many=True, help_text='포스트 될 동네 ID'
+    )
 
     class Meta:
         model = Post
@@ -18,32 +23,33 @@ class PostSerializer(serializers.ModelSerializer):
             'category',
             'view_count',
             'updated',
-            'address',
             'price',
+            'showed_locates',
             'state',
-            'post_images',
+            'photos',
         )
+        read_only_fields = ('id', 'username', 'updated', 'view_count')
 
 
-class PostCreateSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(
-        read_only=True, help_text='게시글 번호')
+class PostCreateSerializer(PostSerializer):
+    dong_id = serializers.CharField(
+        write_only=True, help_text='내 동네 동 ID 값')
+    distance = serializers.CharField(
+        write_only=True, help_text='동네 범위')
 
-    class Meta:
-        model = Post
-        fields = ['id', 'title', 'content', 'category', 'price', 'locate', 'showed_locate']
-        examples = {
-            'id': '1',
-            'title': '아이패드 신형',
-            'content': '싸게 팝니다',
-            'category': 'digital',
-            'price': '1000',
-            'locate': 435,
-            'showed_locate': [
-                1234,
-                2346
-            ],
+    def validate(self, attrs):
+        locate_data = {
+            'dong_id': attrs.pop('dong_id'),
+            'distance': attrs.pop('distance')
         }
+        locates = LocationFilter(data=locate_data)
+        locates.is_valid()
+        attrs['showed_locates'] = locates.filter_queryset(Locate.objects.all())
+        return attrs
+
+    class Meta(PostSerializer.Meta):
+        model = Post
+        fields = PostSerializer.Meta.fields + ('dong_id', 'distance')
 
 
 class PostImageListingField(serializers.RelatedField):
@@ -69,14 +75,6 @@ class PostImageUploadSerializer(serializers.ModelSerializer):
             ]
         }
 
-    def create(self, validated_data):
-        post_id = validated_data['post_id']
-        photos = validated_data.pop('photos')
-        post = Post.objects.get(id=post_id)
-        for photo in photos:
-            PostImage.objects.create(post=post, **photo)
-        return post
-
     def to_internal_value(self, data):
         ret = {
             'post_id': data.get('post_id'),
@@ -97,7 +95,7 @@ class SearchedWordSerializer(serializers.ModelSerializer):
     class Meta:
         model = SearchedWord
         fields = ('content', 'count')
-        
+
 
 class PostLikeSerializer(serializers.ModelSerializer):
     author = serializers.CharField(source='author.username')
@@ -109,4 +107,3 @@ class PostLikeSerializer(serializers.ModelSerializer):
             'author',
             'post',
         )
-

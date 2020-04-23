@@ -57,22 +57,23 @@ class Post(CoreModel):
         choices=POST_CHOICES, max_length=20, help_text='카테고리')
     price = models.IntegerField(
         default=0, help_text='가격')
-    locate = models.ForeignKey(
-        Locate, on_delete=models.CASCADE, help_text='거래 지역')
-    showed_locate = models.ManyToManyField(
-        Locate, related_name='posts', help_text='보여질 지역')
+    showed_locates = models.ManyToManyField(
+        Locate, related_name='posts', blank=True, help_text='보여질 지역')
     view_count = models.IntegerField(
         default=0, help_text='조회 수')
     state = models.CharField(
         choices=STATE_CHOICES, max_length=10, default='sales', help_text='주문 상태')
-
     like_users = models.ManyToManyField(
-        User, through='PostLike', related_name='like_post_set',
+        User, through='PostLike', related_name='like_post_set', blank=True, help_text='관심 유저'
     )
 
     class Meta:
         verbose_name = '게시글'
         verbose_name_plural = '%s 목록' % verbose_name
+
+    @property
+    def username(self):
+        return self.author.username
 
     def __str__(self):
         return '{author} | {title} | {created}'.format(
@@ -86,6 +87,7 @@ def post_image_path(instance, filename):
     return '/'.join(['post_images/', f'/post_{instance.post.id}/', filename])
 
 
+# 사품 이미지
 class PostImage(models.Model):
     photo = models.ImageField(
         upload_to=post_image_path, blank=True, help_text='상품 사진')
@@ -97,7 +99,7 @@ class PostImage(models.Model):
         verbose_name_plural = '%s 목록' % verbose_name
 
     def __str__(self):
-        return self.photo.name
+        return self.photo.url
 
 
 # 관심
@@ -113,19 +115,6 @@ class PostLike(models.Model):
 
     def __str__(self):
         return f'{self.author.username}가 {self.post.title} 을 좋아합니다.'
-
-
-'''
-# 리뷰
-class PostReview(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    buyer = models.ForeignKey(User, on_delete=models.CASCADE)
-    seller = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    class Meta:
-        verbose_name = '리뷰'
-        verbose_name_plural = '%s 목록' % verbose_name
-'''
 
 
 # 검색어
@@ -145,3 +134,14 @@ class SearchedWord(CoreModel):
         return f'"{self.content}"가 {self.count}번 검색되었습니다.'
 
 
+'''
+# 리뷰
+class PostReview(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    buyer = models.ForeignKey(User, on_delete=models.CASCADE)
+    seller = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = '리뷰'
+        verbose_name_plural = '%s 목록' % verbose_name
+'''

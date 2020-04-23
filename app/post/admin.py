@@ -6,7 +6,7 @@ from post.models import Post, PostImage, PostLike
 
 @admin.register(Post)
 class PostAdmin(ImportExportMixin, admin.ModelAdmin):
-    filter_horizontal = ('showed_locate',)
+    filter_horizontal = ('showed_locates',)
 
 
 @admin.register(PostImage, PostLike)

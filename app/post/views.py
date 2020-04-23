@@ -1,49 +1,42 @@
 from django.contrib.auth import get_user_model
-from django.utils.datastructures import MultiValueDict
 from django.utils.decorators import method_decorator
+
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import status
-from rest_framework.exceptions import ValidationError
-
-from django.contrib.gis.db.models.functions import Distance
-from django.contrib.gis.measure import D
-from rest_framework.filters import OrderingFilter
-
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.response import Response
-
-from rest_framework.parsers import MultiPartParser, JSONParser, FormParser
-
-from config.c import LargeResultsSetPagination
-from location.models import Locate
 from post.filters import PostSearchFilter, PostFilter, PostDetailFilter
 
-from post.models import Post, SearchedWord, PostLike
+from rest_framework import status
+from rest_framework.filters import OrderingFilter
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser, JSONParser, FormParser
+from rest_framework.generics import (
+    CreateAPIView,
+    ListAPIView,
+    GenericAPIView,
+    UpdateAPIView
+)
+from config.c import LargeResultsSetPagination
+from post.models import Post, SearchedWord, PostLike, PostImage
 from post.serializers import (
     PostCreateSerializer,
     PostImageUploadSerializer,
     SearchedWordSerializer,
-    PostSerializer, PostLikeSerializer)
-
-from rest_framework.generics import (
-    CreateAPIView,
-    ListAPIView,
-    GenericAPIView, UpdateAPIView)
-
+    PostSerializer, PostLikeSerializer
+)
 from post.swaggers import (
     decorated_post_image_upload_api,
-    decorated_post_create_api)
-
+    decorated_post_create_api
+)
 
 User = get_user_model()
 
 
-class ApiPostList(ListAPIView):
+class PostListAPI(ListAPIView):
     """
     게시글 조회
 
     (+ 거래 동네, + 카테고리)
-    ### GET _/post/list/gps/_
+    ### GET _/post/list/_
     """
     queryset = Post.objects.all()
     serializer_class = PostSerializer
@@ -99,11 +92,11 @@ class ApiPostListOther(ListAPIView):
 
 
 @method_decorator(name='post', decorator=decorated_post_create_api)
-class ApiPostCreate(CreateAPIView):
+class PostCreateAPI(CreateAPIView):
     """
     게시글 생성
 
-    ### POST /post/create/
+    ### POST _/post/create/_
     """
     queryset = Post.objects.all()
     serializer_class = PostCreateSerializer
@@ -111,38 +104,10 @@ class ApiPostCreate(CreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
-
-
-class ApiPostCreateLocate(CreateAPIView):
-    serializer_class = PostCreateSerializer
-
-    def create(self, request, *args, **kwargs):
-        locate_id = request.data.get('locate')
-        distance = request.data.get('distance', 1000)
-        data = request.data.copy()
-
-        try:
-            dong = Locate.objects.get(id=locate_id)
-        except Locate.DoesNotExist:
-            print('Locate.DoesNotExist')
-            raise ValidationError(['There are no dong_id'])
-
-        pnt = dong.latlng
-        locates = Locate.objects.filter(
-            latlng__distance_lt=(pnt, D(m=distance)),
-        ).annotate(distance=Distance(pnt, 'latlng')).order_by('distance')
-        showed_locate = []
-        for locate in locates:
-            showed_locate.append(f'{locate.id}')
-        data.update(MultiValueDict({'showed_locate': showed_locate}))
-
-        serializer = self.get_serializer(data=data)
-        user = User.objects.get(username='admin')
-        if serializer.is_valid():
-            serializer.save(author=user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        post = serializer.save(author=self.request.user)
+        photos = self.request.data.getlist('photos')
+        for photo in photos:
+            PostImage.objects.create(post=post, photo=photo)
 
 
 # TODO: post edit
@@ -152,7 +117,7 @@ class PostImageUploadAPI(CreateAPIView):
     """
     상품 이미지 업로드
 
-    ### POST /post/image/upload/
+    ### POST _/post/image/upload/_
     """
     queryset = Post.objects.all()
     serializer_class = PostImageUploadSerializer
@@ -163,7 +128,7 @@ class SearchAPI(ListAPIView):
     """
     게시글 검색
 
-    ### GET /post/search/
+    ### GET _/post/search/_
     """
     queryset = Post.objects.all()
     serializer_class = PostSerializer
@@ -176,7 +141,7 @@ class SearchSaveAPI(CreateAPIView):
     """
     게시글 검색 저장
 
-    ### POST /post/search/save/
+    ### POST _/post/search/save/_
     """
     queryset = SearchedWord.objects.all()
     serializer_class = SearchedWordSerializer

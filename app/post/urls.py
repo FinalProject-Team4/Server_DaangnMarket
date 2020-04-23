@@ -1,13 +1,23 @@
 from django.urls import path
 
-from post.views import *
+from post.views import (
+    PostListAPI,
+    PostLikeSave,
+    PostDetailAPI,
+    PostCreateAPI,
+    PostImageUploadAPI,
+    SearchAPI,
+    SearchSaveAPI,
+    PostLikeList,
+    ApiPostListOther,
+    ApiPostUpdate
+)
 
 app_name = 'post'
 urlpatterns = [
-    path('list/', ApiPostList.as_view()),
+    path('list/', PostListAPI.as_view()),
     path('detail/', PostDetailAPI.as_view()),
-    path('create/', ApiPostCreate.as_view()),
-    path('create/locate/', ApiPostCreateLocate.as_view()),
+    path('create/', PostCreateAPI.as_view()),
     path('image/upload/', PostImageUploadAPI.as_view()),
     # 판매자의 다른 상품
     path('other/', ApiPostListOther.as_view()),
