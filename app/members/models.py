@@ -24,6 +24,9 @@ class User(CoreModel, AbstractUser):
 
     # buyer_review =
     # seller_review =app
+    @property
+    def messages(self):
+        return self.user_messages
 
     class Meta:
         verbose_name = '유저'
