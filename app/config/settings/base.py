@@ -2,7 +2,12 @@ import os
 import json
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
-
+import firebase_admin
+from firebase_admin import (
+    credentials,
+    auth as fb_auth,
+    db as fb_db
+)
 from core.utils import make_dir
 
 BASE_DIR = make_dir(os.path.abspath(__file__), 3)
@@ -53,7 +58,7 @@ PROJECT_APPS = [
     'location.apps.LocationConfig',
     'post.apps.PostConfig',
     'members.apps.MembersConfig',
-    'notification'
+    'notification',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
@@ -149,3 +154,9 @@ PUSH_NOTIFICATIONS_SETTINGS = {
     'USER_MODEL': AUTH_USER_MODEL,
     'FCM_API_KEY': 'AAAAFTwNi8I:APA91bGm57yBulML3oQEPQSezorzYzoyIr5v8YRmk4akotEFjxjInMnzmTwOVrl7DLCpQQiXifjrpB3nlFqT3H2hS9QBny25SCq8WuqV-xbIBcCuOgeiBpL_iDQBWbL1hfoLh1DiPmg-',
 }
+
+# firebase
+cred = credentials.Certificate(f"{ROOT_DIR}/serviceAccountKey.json")
+default_app = firebase_admin.initialize_app(cred, {
+    "databaseURL": "https://daangn-sms.firebaseio.com"
+})
