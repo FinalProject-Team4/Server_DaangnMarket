@@ -3,35 +3,22 @@ from rest_framework.filters import OrderingFilter
 from rest_framework.generics import ListAPIView
 
 from config.c import LargeResultsSetPagination
-from location.filters import LocationDistanceFilter, LocationFilter, LocationLatLngFilter
+from location.filters import LocationFilter, LocationRangeFilter
 from location.models import Locate
 from location.serializers import LocateSerializer, LocationDistanceSerializer
 
 
-class LocationDongDistanceSearchAPI(ListAPIView):
+class LocationRangeAPI(ListAPIView):
     """
-    동 ID값을 기준 거리 범위에 있는 동 리스트
+    기준 거리 범위에 있는 동 리스트
 
-    ### GET _/location/distance/dong/_
-    """
-    queryset = Locate.objects.all()
-    serializer_class = LocationDistanceSerializer
-    filter_backends = (DjangoFilterBackend, OrderingFilter)
-    filter_class = LocationDistanceFilter
-    ordering = ('-distance',)
-    pagination_class = LargeResultsSetPagination
-
-
-class LocationLatLngDistanceSearchAPI(ListAPIView):
-    """
-    위도 경도 값을 기준 거리 범위에 있는 동 리스트
-
+    (+ dong_id, [+lati, +longi])
     ### GET _/location/distance/latlng/_
     """
     queryset = Locate.objects.all()
     serializer_class = LocationDistanceSerializer
     filter_backends = (DjangoFilterBackend, OrderingFilter)
-    filter_class = LocationLatLngFilter
+    filter_class = LocationRangeFilter
     ordering = ('-distance',)
     pagination_class = LargeResultsSetPagination
 
