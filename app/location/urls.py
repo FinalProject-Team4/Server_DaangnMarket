@@ -1,9 +1,9 @@
 from django.urls import path
 
-from location.views import LocationListAPI, LocationSearchPI
+from location.views import LocationAPI, LocationSearchAPI
 
 app_name = "location"
 urlpatterns = [
-    path('', LocationListAPI.as_view()),
-    path('search/', LocationSearchPI.as_view()),
+    path('', LocationAPI.as_view()),
+    path('search/', LocationSearchAPI.as_view()),
 ]

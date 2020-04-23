@@ -20,7 +20,7 @@ class UserBackend(object):
         try:
             user = User.objects.get(uid=data['uid'])
         except User.DoesNotExist:
-            if data['username']:
+            if data['username'] and data['uid']:
                 data.update({
                     'is_staff': False,
                     'is_superuser': False,

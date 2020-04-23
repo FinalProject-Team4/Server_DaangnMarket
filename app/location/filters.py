@@ -6,7 +6,7 @@ from django_filters.rest_framework import FilterSet, CharFilter, NumberFilter
 from location.models import Locate
 
 
-class LocationFilter(FilterSet):
+class LocationDistanceFilter(FilterSet):
     dong_id = CharFilter(
         field_name='pk', lookup_expr='exact', required=True, help_text='동 ID')
     distance = CharFilter(
@@ -25,7 +25,7 @@ class LocationFilter(FilterSet):
         return ret
 
 
-class LocationSearchFilter(FilterSet):
+class LocationFilter(FilterSet):
     id = CharFilter(
         field_name='pk', lookup_expr='exact', help_text='동 ID')
     dong = CharFilter(
