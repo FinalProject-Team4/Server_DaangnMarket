@@ -27,6 +27,7 @@ class PostSerializer(serializers.ModelSerializer):
             'showed_locates',
             'state',
             'photos',
+            'postlike_set',
         )
         read_only_fields = ('id', 'username', 'updated', 'view_count')
 
