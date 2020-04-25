@@ -5,7 +5,6 @@ from post.views import (
     PostLikeSave,
     PostDetailAPI,
     PostCreateAPI,
-    PostImageUploadAPI,
     SearchAPI,
     SearchSaveAPI,
     PostLikeList,

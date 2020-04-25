@@ -112,16 +112,16 @@ class PostCreateAPI(CreateAPIView):
 
 # TODO: post edit
 
-@method_decorator(name='post', decorator=decorated_post_image_upload_api)
-class PostImageUploadAPI(CreateAPIView):
-    """
-    상품 이미지 업로드
-
-    ### POST _/post/image/upload/_
-    """
-    queryset = Post.objects.all()
-    serializer_class = PostImageUploadSerializer
-    parser_classes = (MultiPartParser, FormParser, JSONParser)
+# @method_decorator(name='post', decorator=decorated_post_image_upload_api)
+# class PostImageUploadAPI(CreateAPIView):
+#     """
+#     상품 이미지 업로드
+#
+#     ### POST _/post/image/upload/_
+#     """
+#     queryset = Post.objects.all()
+#     serializer_class = PostImageUploadSerializer
+#     parser_classes = (MultiPartParser, FormParser, JSONParser)
 
 
 class SearchAPI(ListAPIView):

@@ -26,7 +26,7 @@ class PostSearchFilter(FilterSet):
 
 class PostFilter(FilterSet):
     dong_id = CharFilter(
-        field_name='showed_locate', lookup_expr='exact', help_text='거래 동네')
+        field_name='showed_locates', lookup_expr='exact', help_text='거래 동네')
     category = CharFilter(
         field_name='category', lookup_expr='exact', help_text='카테고리')
 
