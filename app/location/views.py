@@ -13,7 +13,7 @@ class LocationRangeAPI(ListAPIView):
     기준 거리 범위에 있는 동 리스트
 
     (+ dong_id, [+lati, +longi])
-    ### GET _/location/distance/latlng/_
+    ### GET _/location/range/_
     """
     queryset = Locate.objects.all()
     serializer_class = LocationDistanceSerializer
