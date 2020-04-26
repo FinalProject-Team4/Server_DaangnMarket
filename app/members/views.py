@@ -79,6 +79,25 @@ class SignUpAPI(GenericAPIView):
         return Response(UserSerializer(user).data, status.HTTP_200_OK)
 
 
+class UserInfoAPI(ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def retrieve(self, request, *args, **kwargs):
+        return super(UserInfoAPI, self).retrieve(request, *args, **kwargs);
+
+    def partial_update(self, request, *args, **kwargs):
+        return super(UserInfoAPI, self).partial_update(request, *args, **kwargs);
+
+    def destroy(self, request, *args, **kwargs):
+        return super(UserInfoAPI, self).destroy(request, *args, **kwargs);
+
+    def get_object(self):
+        user = self.request.user
+        return user
+
+
 class SetLocateAPI(ModelViewSet):
     queryset = SelectedLocation.objects.all()
     serializer_class = SetLocateSerializer
