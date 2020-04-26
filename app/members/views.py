@@ -4,10 +4,11 @@ from django.utils.decorators import method_decorator
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.generics import GenericAPIView, CreateAPIView
+from rest_framework.generics import GenericAPIView
 from rest_framework.parsers import FormParser, MultiPartParser, JSONParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
 
 from members.models import SelectedLocation
 from members.serializers import (
@@ -16,7 +17,8 @@ from members.serializers import (
     SignUpSerializer,
     SetLocateSerializer
 )
-from members.swaggers import decorated_login_api, decorated_signup_api, decorated_setlocate_api
+from members.swaggers import decorated_login_api, decorated_signup_api, decorated_set_locate_create_edit_api, \
+    decorated_set_locate_delete_api, decorated_set_locate_list_api
 
 User = get_user_model()
 
@@ -77,18 +79,55 @@ class SignUpAPI(GenericAPIView):
         return Response(UserSerializer(user).data, status.HTTP_200_OK)
 
 
-@method_decorator(name='post', decorator=decorated_setlocate_api)
-class SetLocateAPI(CreateAPIView):
-    """
-    내 동네 설정
-
-    ### POST _/members/locate/_
-    """
+class SetLocateAPI(ModelViewSet):
     queryset = SelectedLocation.objects.all()
     serializer_class = SetLocateSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = None
 
-    def get_serializer(self, *args, **kwargs):
-        serializer = super(SetLocateAPI, self).get_serializer(*args, **kwargs)
-        serializer.initial_data['user'] = self.request.user.pk
-        return serializer
+    @method_decorator(decorator=decorated_set_locate_list_api)
+    def list(self, request, *args, **kwargs):
+        """
+        내 동네 설정 목록
+
+        ### GET _/members/locate/_
+        """
+        return super(SetLocateAPI, self).list(request, *args, **kwargs)
+
+    @method_decorator(decorator=decorated_set_locate_create_edit_api)
+    def create(self, request, *args, **kwargs):
+        """
+        내 동네 설정 저장
+
+        ### POST _/members/locate/_
+        """
+        return super(SetLocateAPI, self).create(request, *args, **kwargs)
+
+    @method_decorator(decorator=decorated_set_locate_create_edit_api)
+    def partial_update(self, request, *args, **kwargs):
+        """
+        내 동네 설정 수정
+
+        ### PATCH _/members/locate/_
+        """
+        return super(SetLocateAPI, self).partial_update(request, *args, **kwargs)
+
+    @method_decorator(decorator=decorated_set_locate_delete_api)
+    def destroy(self, request, *args, **kwargs):
+        """
+        내 동네 설정 삭제
+
+        ### DELETE _/members/locate/_
+        """
+        return super(SetLocateAPI, self).destroy(request, *args, **kwargs)
+
+    def get_queryset(self):
+        user = self.request.user
+        ret = user.user_selected_locations
+        return ret
+
+    def get_object(self):
+        locate = self.request.data['locate']
+        qs = self.get_queryset()
+        ret = qs.filter(locate_id=locate).get()
+        return ret

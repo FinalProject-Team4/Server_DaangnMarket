@@ -4,6 +4,7 @@ from rest_framework import serializers, status
 from rest_framework.response import Response
 
 from members.models import SelectedLocation
+from location.models import Locate
 
 User = get_user_model()
 
@@ -75,21 +76,28 @@ class SignUpSerializer(IdTokenSerializer):
 
 # 내 동네 설정
 class SetLocateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SelectedLocation
-        fields = ('user', 'dong_id', 'distance', 'verified', 'activated')
-        examples = {
-            'user': 'test-user',
-            'locate': '6041',
-            'distance': '1000',
-        }
 
     def validate(self, attrs):
         instance = SelectedLocation(**attrs)
-        instance.clean()
+        instance.full_clean()
         return attrs
 
     def to_representation(self, instance):
         ret = super(SetLocateSerializer, self).to_representation(instance)
         ret['user'] = instance.user.username
         return ret
+
+    def to_internal_value(self, data):
+        data['user'] = self.context['request'].user
+        location = Locate.objects.get(pk=data['locate'])
+        data['locate'] = location
+        return data
+
+    class Meta:
+        model = SelectedLocation
+        fields = ('user', 'locate', 'distance', 'verified', 'activated')
+        examples = {
+            'user': 'test-user',
+            'locate': '6041',
+            'distance': '1000',
+        }

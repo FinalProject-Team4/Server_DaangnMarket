@@ -34,10 +34,10 @@ class User(CoreModel, AbstractUser):
 
 
 class SelectedLocation(CoreModel):
-    dong_id = models.ForeignKey(
-        Locate, related_name='selected_locations_verified', on_delete=models.CASCADE)
+    locate = models.ForeignKey(
+        Locate, related_name='user_selected_locations', on_delete=models.CASCADE)
     user = models.ForeignKey(
-        User, related_name='selected_locations_verified', on_delete=models.CASCADE)
+        User, related_name='user_selected_locations', on_delete=models.CASCADE)
     verified = models.BooleanField(
         default=False, help_text='동네 인증 여부')
     activated = models.BooleanField(
@@ -46,6 +46,6 @@ class SelectedLocation(CoreModel):
         default=1000, help_text='동네 포함 범위')
 
     def clean(self):
-        cnt = self.user.selected_locations_verified.count()
+        cnt = self.user.user_selected_locations.count()
         if cnt > 2:
             raise ValidationError(f'{self.user.username}님은 이미 2개 선택 했습니다')

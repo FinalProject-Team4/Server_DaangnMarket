@@ -32,14 +32,14 @@ class PostSerializer(serializers.ModelSerializer):
 
 
 class PostCreateSerializer(PostSerializer):
-    dong_id = serializers.CharField(
+    locate = serializers.CharField(
         write_only=True, help_text='내 동네 동 ID 값')
     distance = serializers.CharField(
         write_only=True, help_text='동네 범위')
 
     def validate(self, attrs):
         locate_data = {
-            'dong_id': attrs.pop('dong_id'),
+            'locate': attrs.pop('locate'),
             'distance': attrs.pop('distance')
         }
         locates = LocationFilter(data=locate_data)
@@ -49,7 +49,7 @@ class PostCreateSerializer(PostSerializer):
 
     class Meta(PostSerializer.Meta):
         model = Post
-        fields = PostSerializer.Meta.fields + ('dong_id', 'distance')
+        fields = PostSerializer.Meta.fields + ('locate', 'distance')
 
 
 class PostImageListingField(serializers.RelatedField):
