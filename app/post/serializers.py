@@ -7,9 +7,9 @@ from post.models import Post, PostImage, SearchedWord, PostLike
 
 class PostSerializer(serializers.ModelSerializer):
     photos = serializers.StringRelatedField(
-        source='post_images', read_only=True,  many=True, help_text='상품 사진')
+        source='post_images', read_only=True, many=True, help_text='상품 사진')
     showed_locates = serializers.PrimaryKeyRelatedField(
-        read_only=True,  many=True, help_text='포스트 될 동네 ID'
+        read_only=True, many=True, help_text='포스트 될 동네 ID'
     )
 
     class Meta:
@@ -55,32 +55,6 @@ class PostCreateSerializer(PostSerializer):
 class PostImageListingField(serializers.RelatedField):
     def to_representation(self, value):
         return value.photo.url
-
-
-# 상품 이미지 업로드
-class PostImageUploadSerializer(serializers.ModelSerializer):
-    post_id = serializers.CharField(
-        source='id', help_text='게시글 번호')
-    photos = PostImageListingField(
-        source='post_images', queryset=PostImage.objects.all(), many=True, help_text='상품 이미지 URIs')
-
-    class Meta:
-        model = Post
-        fields = ('post_id', 'photos',)
-        examples = {
-            'post_id': '2',
-            'photos': [
-                'https://img_server.com/post_images/post_2/anna.jpeg',
-                'https://img_server.com/post_images/post_3/elsa.jpeg',
-            ]
-        }
-
-    def to_internal_value(self, data):
-        ret = {
-            'post_id': data.get('post_id'),
-            'photos': [{'photo': photo} for photo in data.getlist('photos')]
-        }
-        return ret
 
 
 # 게시글 검색 저장

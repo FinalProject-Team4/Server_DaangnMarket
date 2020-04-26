@@ -1,6 +1,7 @@
 from django.urls import path
-from .views import *
-
+from .views import (
+    entry_view, signup_view, LoginAPI, SignUpAPI, SetLocateAPI
+)
 
 app_name = "members"
 urlpatterns = [
