@@ -8,7 +8,7 @@ from location.models import Locate
 
 
 class LocationRangeFilter(FilterSet):
-    dong_id = CharFilter(
+    locate = CharFilter(
         field_name='pk', lookup_expr='exact', help_text='동 ID')
     lati = NumberFilter(
         method='filter_distance', help_text='위도')
@@ -19,10 +19,10 @@ class LocationRangeFilter(FilterSet):
 
     class Meta:
         model = Locate
-        fields = ['dong_id', 'longi', 'lati', 'distance']
+        fields = ['locate', 'longi', 'lati', 'distance']
 
     def filter_distance(self, qs, name, value):
-        if self.data.get('dong_id', None):
+        if self.data.get('locate', None):
             pnt = qs.get().latlng
         else:
             self.data._mutable = True
