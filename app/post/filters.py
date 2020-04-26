@@ -21,7 +21,7 @@ class PostSearchFilter(FilterSet):
 
     def filter_locate(self, qs, name, value):
         locates = [L for L in value.strip().split(',') if L]
-        return qs.filter(showed_locate__in=locates)
+        return qs.filter(showed_locates__in=locates)
 
 
 class PostFilter(FilterSet):

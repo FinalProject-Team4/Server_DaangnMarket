@@ -72,9 +72,26 @@ decorated_set_locate_create_edit_api = \
             }
         ),
         responses={
-            201: openapi.Response(
+            201: openapi.Schema(
                 description='Success',
-                schema=SetLocateSerializer,
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'user': openapi.Schema(
+                        type=openapi.TYPE_STRING
+                    ),
+                    'locate': openapi.Schema(
+                        type=openapi.TYPE_INTEGER
+                    ),
+                    'distance': openapi.Schema(
+                        type=openapi.TYPE_INTEGER
+                    ),
+                    'verified': openapi.Schema(
+                        type=openapi.TYPE_BOOLEAN
+                    ),
+                    'activated': openapi.Schema(
+                        type=openapi.TYPE_BOOLEAN
+                    )
+                }
             ),
         },
         tags=['Users'],
