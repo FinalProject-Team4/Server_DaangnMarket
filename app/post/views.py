@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from django.utils.decorators import method_decorator
 
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.viewsets import ModelViewSet
+
 from post.filters import PostSearchFilter, PostFilter, PostDetailFilter
 
 from rest_framework import status
@@ -63,52 +65,15 @@ class PostDetailAPI(GenericAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class ApiPostUpdate(UpdateAPIView):
-    serializer_class = PostSerializer
-
-    def update(self, request, *args, **kwargs):
-        post_id = request.data.get('post_id')
-        state = request.data.get('state')
-        post = Post.objects.get(pk=post_id)
-        post.state = state
-        post.save()
-        serializer = self.serializer_class(post)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-class ApiPostListOther(ListAPIView):
-    serializer_class = PostSerializer
-    pagination_class = LargeResultsSetPagination
-
-    def get_queryset(self):
-        post_id = self.request.query_params.get('post_id', 0)
-        post = Post.objects.get(pk=post_id)
-        list = Post.objects.filter(author=post.author)
-        return list
-
-
-class ApiPostListUser(ListAPIView):
-    serializer_class = PostSerializer
-    pagination_class = LargeResultsSetPagination
-
-    def get_queryset(self):
-        username = self.request.query_params.get('username', 0)
-        user = User.objects.get(username=username)
-        list = Post.objects.filter(author=user)
-        return list
-
-
-@method_decorator(name='post', decorator=decorated_post_create_api)
-class PostCreateAPI(CreateAPIView):
-    """
-    게시글 생성
-
-    ### POST _/post/create/_
-    """
+class PostCreateUpdateDestroy(ModelViewSet):
     queryset = Post.objects.all()
-    serializer_class = PostCreateSerializer
     parser_classes = (MultiPartParser, FormParser, JSONParser)
     permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return PostCreateSerializer
+        return PostSerializer
 
     def perform_create(self, serializer):
         post = serializer.save(author=self.request.user)
@@ -116,8 +81,10 @@ class PostCreateAPI(CreateAPIView):
         for photo in photos:
             PostImage.objects.create(post=post, photo=photo)
 
+    def get_object(self):
+        qs = self.get_queryset()
+        return qs.filter(pk=self.request.data['post_id']).get()
 
-# TODO: post edit
 
 class SearchAPI(ListAPIView):
     """
