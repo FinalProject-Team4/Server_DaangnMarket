@@ -1,9 +1,12 @@
+from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django_filters.rest_framework import FilterSet, CharFilter, NumberFilter
 
 from location.filters import LocationFilter
 from location.models import Locate
 from post.models import Post
+
+User = get_user_model()
 
 
 class PostSearchFilter(FilterSet):
@@ -32,8 +35,13 @@ class PostFilter(FilterSet):
     category = CharFilter(
         method='filter_category', lookup_expr='exact', help_text='카테고리')
     distance = CharFilter(
-        method='range_filter', lookup_expr='exact', help_text='범위'
-    )
+        method='range_filter', lookup_expr='exact', help_text='범위')
+    username = CharFilter(
+        method='filter_user', lookup_expr='exact', help_text='작성자')
+
+    def fliter_user(self, qs, name, value):
+        user = User.objects.get(username=value)
+        return qs.filter(author=user)
 
     def filter_category(self, qs, name, value):
         categories = [C for C in value.strip().split(',') if C]

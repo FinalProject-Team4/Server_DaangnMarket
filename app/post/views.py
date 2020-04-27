@@ -78,28 +78,6 @@ class ApiPostUpdate(UpdateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ApiPostListOther(ListAPIView):
-    serializer_class = PostSerializer
-    pagination_class = LargeResultsSetPagination
-
-    def get_queryset(self):
-        post_id = self.request.query_params.get('post_id', 0)
-        post = Post.objects.get(pk=post_id)
-        list = Post.objects.filter(author=post.author)
-        return list
-
-
-class ApiPostListUser(ListAPIView):
-    serializer_class = PostSerializer
-    pagination_class = LargeResultsSetPagination
-
-    def get_queryset(self):
-        username = self.request.query_params.get('username', 0)
-        user = User.objects.get(username=username)
-        list = Post.objects.filter(author=user)
-        return list
-
-
 @method_decorator(name='post', decorator=decorated_post_create_api)
 class PostCreateAPI(CreateAPIView):
     """
