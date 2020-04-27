@@ -30,10 +30,14 @@ class PostFilter(FilterSet):
     locate = CharFilter(
         method='range_filter', lookup_expr='exact', help_text='대표 거래 동네')
     category = CharFilter(
-        field_name='category', lookup_expr='exact', help_text='카테고리')
+        method='filter_category', lookup_expr='exact', help_text='카테고리')
     distance = CharFilter(
         method='range_filter', lookup_expr='exact', help_text='범위'
     )
+
+    def filter_category(self, qs, name, value):
+        categories = [C for C in value.strip().split(',') if C]
+        return qs.filter(category__in=categories)
 
     def range_filter(self, qs, name, value):
         locate_data = {
@@ -43,7 +47,9 @@ class PostFilter(FilterSet):
         locates = LocationFilter(data=locate_data)
         locates.is_valid()
         user_locations = locates.filter_queryset(Locate.objects.all())
-        return qs.filter(showed_locates__in=user_locations).distinct()
+        ret = qs.filter(showed_locates__in=user_locations)
+        ret = ret.distinct()
+        return ret
 
     class Meta:
         model = Post
