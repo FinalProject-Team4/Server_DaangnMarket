@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from rest_framework import serializers
 
 from location.filters import LocationFilter
@@ -35,7 +36,10 @@ class PostCreateSerializer(PostSerializer):
 
     def validate(self, attrs):
         user = self.context.get('request').user
-        activated = user.user_selected_locations.filter(activated=True).get()
+        try:
+            activated = user.user_selected_locations.filter(activated=True).get()
+        except ObjectDoesNotExist:
+            raise ValidationError(f'내 동네 설정이 없습니다')
         locate_data = {
             'locate': activated.locate,
             'distance': attrs.pop('distance')
