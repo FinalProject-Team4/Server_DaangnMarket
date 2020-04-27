@@ -1,6 +1,8 @@
 from django.db.models import Q
 from django_filters.rest_framework import FilterSet, CharFilter, NumberFilter
 
+from location.filters import LocationFilter
+from location.models import Locate
 from post.models import Post
 
 
@@ -26,13 +28,32 @@ class PostSearchFilter(FilterSet):
 
 class PostFilter(FilterSet):
     locate = CharFilter(
-        field_name='showed_locates', lookup_expr='exact', help_text='거래 동네')
+        method='range_filter', lookup_expr='exact', help_text='대표 거래 동네')
     category = CharFilter(
-        field_name='category', lookup_expr='exact', help_text='카테고리')
+        method='filter_category', lookup_expr='exact', help_text='카테고리')
+    distance = CharFilter(
+        method='range_filter', lookup_expr='exact', help_text='범위'
+    )
+
+    def filter_category(self, qs, name, value):
+        categories = [C for C in value.strip().split(',') if C]
+        return qs.filter(category__in=categories)
+
+    def range_filter(self, qs, name, value):
+        locate_data = {
+            'locate': self.data.get('locate'),
+            'distance': self.data.get('distance')
+        }
+        locates = LocationFilter(data=locate_data)
+        locates.is_valid()
+        user_locations = locates.filter_queryset(Locate.objects.all())
+        ret = qs.filter(showed_locates__in=user_locations)
+        ret = ret.distinct()
+        return ret
 
     class Meta:
         model = Post
-        fields = ['locate', 'category']
+        fields = ['locate', 'category', 'distance']
 
 
 class PostDetailFilter(FilterSet):

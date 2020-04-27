@@ -53,6 +53,8 @@ class Post(CoreModel):
         max_length=100, help_text='제목')
     content = models.TextField(
         help_text='본문')
+    address = models.CharField(
+        max_length=200, help_text='대표 거래 지역')
     category = models.CharField(
         choices=POST_CHOICES, max_length=20, help_text='카테고리')
     price = models.IntegerField(

@@ -49,3 +49,7 @@ class SelectedLocation(CoreModel):
         cnt = self.user.user_selected_locations.count()
         if cnt > 2:
             raise ValidationError(f'{self.user.username}님은 이미 2개 선택 했습니다')
+
+    class Meta:
+        verbose_name = '내 동네'
+        verbose_name_plural = '내 동네'
