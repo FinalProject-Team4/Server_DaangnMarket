@@ -89,6 +89,17 @@ class ApiPostListOther(ListAPIView):
         return list
 
 
+class ApiPostListUser(ListAPIView):
+    serializer_class = PostSerializer
+    pagination_class = LargeResultsSetPagination
+
+    def get_queryset(self):
+        username = self.request.query_params.get('username', 0)
+        user = User.objects.get(username=username)
+        list = Post.objects.filter(author=user)
+        return list
+
+
 @method_decorator(name='post', decorator=decorated_post_create_api)
 class PostCreateAPI(CreateAPIView):
     """
