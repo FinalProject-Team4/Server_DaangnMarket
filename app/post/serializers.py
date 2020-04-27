@@ -21,12 +21,12 @@ class PostSerializer(serializers.ModelSerializer):
             'category',
             'view_count',
             'updated',
+            'likes',
             'price',
             'state',
             'photos',
-            'postlike_set',
         )
-        read_only_fields = ('id', 'username', 'updated', 'view_count', 'address')
+        read_only_fields = ('id', 'username', 'likes', 'updated', 'view_count', 'address')
 
 
 class PostCreateSerializer(PostSerializer):
