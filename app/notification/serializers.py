@@ -13,7 +13,7 @@ class NotificationSerializer(serializers.ModelSerializer):
         model = Notification
         depth = 0
         fields = (
-            'sender', 'receiver', 'title', 'body',
+            'sender', 'receiver', 'title', 'body', 'created',
         )
 
 

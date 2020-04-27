@@ -113,7 +113,7 @@ class ApiListNotice(ListAPIView):
     def get_queryset(self):
         user = self.request.user
         receiver = GCMDevice.objects.get(name=user.username)
-        notifications = Notification.objects.filter(receiver=receiver, type='notice')
+        notifications = Notification.objects.filter(receiver=receiver, type='notice').order_by('created')
         return notifications
 
 
