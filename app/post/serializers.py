@@ -71,6 +71,7 @@ class SearchedWordSerializer(serializers.ModelSerializer):
 
 class PostLikeSerializer(serializers.ModelSerializer):
     author = serializers.CharField(source='author.username')
+    post = PostSerializer(read_only=True)
 
     class Meta:
         model = PostLike
