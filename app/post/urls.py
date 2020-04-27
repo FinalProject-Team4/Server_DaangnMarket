@@ -10,7 +10,8 @@ from post.views import (
     PostLikeList,
     ApiPostListOther,
     ApiPostUpdate,
-    ApiPostListUser)
+    ApiPostListUser
+)
 
 app_name = 'post'
 urlpatterns = [
@@ -23,11 +24,8 @@ urlpatterns = [
     path('user/', ApiPostListUser.as_view()),
     # 판매 상품 상태 변경
     path('update/', ApiPostUpdate.as_view()),
-    # TODO : viewset 으로 분리
     path('search/', SearchAPI.as_view()),
     path('search/save/', SearchSaveAPI.as_view()),
-  
-    # TODO :
     path('like/', PostLikeSave.as_view()),
     path('like/list/', PostLikeList.as_view()),
 ]
