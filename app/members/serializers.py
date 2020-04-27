@@ -3,6 +3,7 @@ from config.settings.base import fb_auth
 from rest_framework import serializers, status
 from rest_framework.response import Response
 
+from location.serializers import LocateSerializer
 from members.models import SelectedLocation
 from location.models import Locate
 
@@ -76,6 +77,7 @@ class SignUpSerializer(IdTokenSerializer):
 
 # 내 동네 설정
 class SetLocateSerializer(serializers.ModelSerializer):
+    locate = LocateSerializer(read_only=True)
 
     def validate(self, attrs):
         instance = SelectedLocation(**attrs)
