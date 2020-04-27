@@ -7,10 +7,7 @@ from post.models import Post, PostImage, SearchedWord, PostLike
 
 class PostSerializer(serializers.ModelSerializer):
     photos = serializers.StringRelatedField(
-        source='post_images', read_only=True,  many=True, help_text='상품 사진')
-    showed_locates = serializers.PrimaryKeyRelatedField(
-        read_only=True,  many=True, help_text='포스트 될 동네 ID'
-    )
+        source='post_images', read_only=True, many=True, help_text='상품 사진')
 
     class Meta:
         model = Post
@@ -20,68 +17,43 @@ class PostSerializer(serializers.ModelSerializer):
             'username',
             'title',
             'content',
+            'address',
             'category',
             'view_count',
             'updated',
             'price',
-            'showed_locates',
             'state',
             'photos',
             'postlike_set',
         )
-        read_only_fields = ('id', 'username', 'updated', 'view_count')
+        read_only_fields = ('id', 'username', 'updated', 'view_count', 'address')
 
 
 class PostCreateSerializer(PostSerializer):
-    dong_id = serializers.CharField(
-        write_only=True, help_text='내 동네 동 ID 값')
     distance = serializers.CharField(
         write_only=True, help_text='동네 범위')
 
     def validate(self, attrs):
+        user = self.context.get('request').user
+        activated = user.user_selected_locations.filter(activated=True).get()
         locate_data = {
-            'dong_id': attrs.pop('dong_id'),
+            'locate': activated.locate,
             'distance': attrs.pop('distance')
         }
         locates = LocationFilter(data=locate_data)
         locates.is_valid()
         attrs['showed_locates'] = locates.filter_queryset(Locate.objects.all())
+        attrs['address'] = activated.locate.address
         return attrs
 
     class Meta(PostSerializer.Meta):
         model = Post
-        fields = PostSerializer.Meta.fields + ('dong_id', 'distance')
+        fields = PostSerializer.Meta.fields + ('distance',)
 
 
 class PostImageListingField(serializers.RelatedField):
     def to_representation(self, value):
         return value.photo.url
-
-
-# 상품 이미지 업로드
-class PostImageUploadSerializer(serializers.ModelSerializer):
-    post_id = serializers.CharField(
-        source='id', help_text='게시글 번호')
-    photos = PostImageListingField(
-        source='post_images', queryset=PostImage.objects.all(), many=True, help_text='상품 이미지 URIs')
-
-    class Meta:
-        model = Post
-        fields = ('post_id', 'photos',)
-        examples = {
-            'post_id': '2',
-            'photos': [
-                'https://img_server.com/post_images/post_2/anna.jpeg',
-                'https://img_server.com/post_images/post_3/elsa.jpeg',
-            ]
-        }
-
-    def to_internal_value(self, data):
-        ret = {
-            'post_id': data.get('post_id'),
-            'photos': [{'photo': photo} for photo in data.getlist('photos')]
-        }
-        return ret
 
 
 # 게시글 검색 저장
@@ -100,6 +72,7 @@ class SearchedWordSerializer(serializers.ModelSerializer):
 
 class PostLikeSerializer(serializers.ModelSerializer):
     author = serializers.CharField(source='author.username')
+    post = PostSerializer(read_only=True)
 
     class Meta:
         model = PostLike
