@@ -77,6 +77,10 @@ class Post(CoreModel):
     def username(self):
         return self.author.username
 
+    @property
+    def likes(self):
+        return self.post_likes.count()
+
     def __str__(self):
         return '{author} | {title} | {created}'.format(
             author=self.author.username,
@@ -105,9 +109,9 @@ class PostImage(models.Model):
 
 
 # 관심
-class PostLike(models.Model):
+class PostLike(CoreModel):
     post = models.ForeignKey(
-        Post, on_delete=models.CASCADE, help_text='게시글 번호')
+        Post, on_delete=models.CASCADE, related_name='post_likes', help_text='게시글 번호')
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, help_text='좋아요 누른 유저')
 
