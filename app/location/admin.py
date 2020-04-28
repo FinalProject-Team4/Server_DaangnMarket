@@ -7,5 +7,4 @@ from location.models import Locate
 
 @admin.register(Locate)
 class LocateAdmin(ImportExportMixin, admin.ModelAdmin):
-    pass
-
+    list_display = ('id', 'dong', 'address', 'longitude', 'latitude')
