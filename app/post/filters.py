@@ -39,7 +39,7 @@ class PostFilter(FilterSet):
     username = CharFilter(
         method='filter_user', lookup_expr='exact', help_text='작성자')
 
-    def fliter_user(self, qs, name, value):
+    def filter_user(self, qs, name, value):
         user = User.objects.get(username=value)
         return qs.filter(author=user)
 

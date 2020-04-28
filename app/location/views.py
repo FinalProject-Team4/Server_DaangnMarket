@@ -19,7 +19,7 @@ class LocationRangeAPI(ListAPIView):
     serializer_class = LocationDistanceSerializer
     filter_backends = (DjangoFilterBackend, OrderingFilter)
     filter_class = LocationRangeFilter
-    ordering = ('-distance',)
+    ordering = ('distance',)
     pagination_class = LargeResultsSetPagination
 
 
