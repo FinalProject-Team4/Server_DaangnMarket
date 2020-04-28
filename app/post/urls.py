@@ -5,7 +5,6 @@ from post.views import (
     PostLikeSave,
     PostDetailAPI,
     SearchAPI,
-    SearchSaveAPI,
     PostLikeList,
     PostCreateUpdateDestroy)
 
@@ -20,7 +19,6 @@ urlpatterns = [
     path('detail/', PostDetailAPI.as_view()),
 
     path('search/', SearchAPI.as_view()),
-    path('search/save/', SearchSaveAPI.as_view()),
     path('like/', PostLikeSave.as_view()),
     path('like/list/', PostLikeList.as_view()),
 ]

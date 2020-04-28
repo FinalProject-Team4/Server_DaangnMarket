@@ -21,11 +21,11 @@ from config.c import LargeResultsSetPagination
 from post.models import Post, SearchedWord, PostLike, PostImage
 from post.serializers import (
     PostCreateSerializer,
-    SearchedWordSerializer,
-    PostSerializer, PostLikeSerializer
+    PostSerializer,
+    PostLikeSerializer
 )
 from post.swaggers import (
-    decorated_post_create_api
+    decorated_post_create_update_api
 )
 
 User = get_user_model()
@@ -70,6 +70,40 @@ class PostCreateUpdateDestroy(ModelViewSet):
     parser_classes = (MultiPartParser, FormParser, JSONParser)
     permission_classes = [IsAuthenticated]
 
+    def retrieve(self, request, *args, **kwargs):
+        """
+        게시 정보 조회
+
+        ### GET _/post/_
+        """
+        return super(PostCreateUpdateDestroy, self).retrieve(request, *args, **kwargs)
+
+    @method_decorator(decorator=decorated_post_create_update_api)
+    def create(self, request, *args, **kwargs):
+        """
+        게시물 생성
+
+        ### POST _/post/_
+        """
+        return super(PostCreateUpdateDestroy, self).create(request, *args, **kwargs)
+
+    @method_decorator(decorator=decorated_post_create_update_api)
+    def partial_update(self, request, *args, **kwargs):
+        """
+        게시물 수정
+
+        ### PATCH _/post/_
+        """
+        return super(PostCreateUpdateDestroy, self).partial_update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        게시물 삭제
+
+        ### DELETE _/post/_
+        """
+        return super(PostCreateUpdateDestroy, self).destroy(request, *args, **kwargs)
+
     def get_serializer_class(self):
         if self.action == 'create':
             return PostCreateSerializer
@@ -80,6 +114,9 @@ class PostCreateUpdateDestroy(ModelViewSet):
         photos = self.request.data.getlist('photos')
         for photo in photos:
             PostImage.objects.create(post=post, photo=photo)
+
+    def perform_update(self, serializer):
+        serializer.save(user=self.request.user)
 
     def get_object(self):
         qs = self.get_queryset()
@@ -99,18 +136,12 @@ class SearchAPI(ListAPIView):
     ordering = ('-updated',)
 
 
-class SearchSaveAPI(CreateAPIView):
-    """
-    게시글 검색 저장
-
-    ### POST _/post/search/save/_
-    """
-    queryset = SearchedWord.objects.all()
-    serializer_class = SearchedWordSerializer
-    permission_classes = [IsAuthenticated]
-
-
 class PostLikeSave(CreateAPIView):
+    """
+    좋아요 저장
+
+    ### POST _/post/like/_
+    """
     serializer_class = PostLikeSerializer
     permission_classes = [IsAuthenticated]
 
@@ -129,6 +160,11 @@ class PostLikeSave(CreateAPIView):
 
 
 class PostLikeList(ListAPIView):
+    """
+    좋아요 리스트
+
+    ### GET _/post/like/list/_
+    """
     serializer_class = PostLikeSerializer
     permission_classes = [IsAuthenticated]
 

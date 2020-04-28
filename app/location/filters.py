@@ -29,6 +29,7 @@ class LocationRangeFilter(FilterSet):
             pnt = Point(
                 float(self.data['longi']),
                 float(self.data['lati']))
+            self.data._mutable = False
         distance = self.data['distance']
         ret = Locate.objects.filter(
             latlng__distance_lt=(pnt, D(m=distance)),

@@ -17,8 +17,12 @@ from members.serializers import (
     SignUpSerializer,
     SetLocateSerializer
 )
-from members.swaggers import decorated_login_api, decorated_signup_api, decorated_set_locate_create_edit_api, \
-    decorated_set_locate_delete_api, decorated_set_locate_list_api
+from members.swaggers import (
+    decorated_login_api,
+    decorated_signup_api,
+    decorated_set_locate_create_edit_api,
+    decorated_set_locate_delete_api
+)
 
 User = get_user_model()
 
@@ -85,13 +89,28 @@ class UserInfoAPI(ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def retrieve(self, request, *args, **kwargs):
-        return super(UserInfoAPI, self).retrieve(request, *args, **kwargs);
+        """
+        유저 정보 조회
+
+        ### GET _/members/info/_
+        """
+        return super(UserInfoAPI, self).retrieve(request, *args, **kwargs)
 
     def partial_update(self, request, *args, **kwargs):
-        return super(UserInfoAPI, self).partial_update(request, *args, **kwargs);
+        """
+        유저 정보 수정
+
+        ### PATCH _/members/info/_
+        """
+        return super(UserInfoAPI, self).partial_update(request, *args, **kwargs)
 
     def destroy(self, request, *args, **kwargs):
-        return super(UserInfoAPI, self).destroy(request, *args, **kwargs);
+        """
+        유저 정보 삭제
+
+        ### DELETE _/members/info/_
+        """
+        return super(UserInfoAPI, self).destroy(request, *args, **kwargs)
 
     def get_object(self):
         user = self.request.user
@@ -104,7 +123,6 @@ class SetLocateAPI(ModelViewSet):
     permission_classes = [IsAuthenticated]
     pagination_class = None
 
-    @method_decorator(decorator=decorated_set_locate_list_api)
     def list(self, request, *args, **kwargs):
         """
         내 동네 설정 목록

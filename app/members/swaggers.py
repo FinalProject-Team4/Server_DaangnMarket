@@ -11,7 +11,6 @@ decorated_login_api = \
                 schema=UserSerializer,
             ),
         },
-        tags=['Users'],
     )
 
 decorated_signup_api = \
@@ -41,7 +40,6 @@ decorated_signup_api = \
                 schema=UserSerializer,
             ),
         },
-        tags=['Users'],
     )
 
 decorated_set_locate_create_edit_api = \
@@ -94,7 +92,6 @@ decorated_set_locate_create_edit_api = \
                 }
             ),
         },
-        tags=['Users'],
     )
 
 decorated_set_locate_delete_api = \
@@ -109,10 +106,4 @@ decorated_set_locate_delete_api = \
                 ),
             }
         ),
-        tags=['Users'],
-    )
-
-decorated_set_locate_list_api = \
-    swagger_auto_schema(
-        tags=['Users'],
     )
