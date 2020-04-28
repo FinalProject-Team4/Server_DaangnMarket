@@ -6,7 +6,7 @@ DaangnMarket clone project
 2. [Installation](#2.Installation)
 3. [Setup](#3.Setup)
 4. [Deploy](#4.Deploy)
-5. [API document](#5.API document)
+5. [API document](#5.API_document)
 
 ## 1.Prerequisites
 ### Secrets JSON File
@@ -126,5 +126,5 @@ django-extensions = "^2.2.9"
 $ <project-root>/deploy.py
 ```
 
-## 5.API document
+## 5.API_document
 [daangn.shinjam.xyz/docs](http://daangn.shinjam.xyz/docs)
