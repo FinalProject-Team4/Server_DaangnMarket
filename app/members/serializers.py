@@ -100,6 +100,5 @@ class SetLocateSerializer(serializers.ModelSerializer):
         fields = ('user', 'locate', 'distance', 'verified', 'activated')
         examples = {
             'user': 'test-user',
-            'locate': '6041',
             'distance': '1000',
         }

@@ -61,20 +61,6 @@ class PostImageListingField(serializers.RelatedField):
         return value.photo.url
 
 
-# 게시글 검색 저장
-class SearchedWordSerializer(serializers.ModelSerializer):
-
-    def create(self, validated_data):
-        user = self.context['request'].user
-        w, _ = SearchedWord.objects.get_or_create(user=user, content=validated_data['content'])
-        w.count = w.count + 1
-        return w
-
-    class Meta:
-        model = SearchedWord
-        fields = ('content', 'count')
-
-
 class PostLikeSerializer(serializers.ModelSerializer):
     author = serializers.CharField(source='author.username')
     post = PostSerializer(read_only=True)
