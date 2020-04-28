@@ -163,6 +163,9 @@ class SetLocateAPI(ModelViewSet):
         ret = user.user_selected_locations
         return ret
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
     def get_object(self):
         locate = self.request.data['locate']
         qs = self.get_queryset()
