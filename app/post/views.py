@@ -115,9 +115,6 @@ class PostCreateUpdateDestroy(ModelViewSet):
         for photo in photos:
             PostImage.objects.create(post=post, photo=photo)
 
-    def perform_update(self, serializer):
-        serializer.save(user=self.request.user)
-
     def get_object(self):
         qs = self.get_queryset()
         return qs.filter(pk=self.request.data['post_id']).get()
