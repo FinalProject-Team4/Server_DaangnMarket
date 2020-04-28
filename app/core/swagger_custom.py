@@ -48,7 +48,8 @@ class MyAutoSchema(SwaggerAutoSchema):
         return summary, description
 
     def _get_permissions_description(self):
-        permission_class = getattr(self.view, 'permission_classes', None)
+        override = self.overrides.get('permission_classes', None)
+        permission_class = override or getattr(self.view, 'permission_classes', None)
         if permission_class:
             return f'\n**Permissions:** `{permission_class.pop().__name__}`'
         else:
