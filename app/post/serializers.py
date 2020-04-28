@@ -21,6 +21,7 @@ class PostSerializer(serializers.ModelSerializer):
             'address',
             'category',
             'view_count',
+            'created',
             'updated',
             'likes',
             'price',
