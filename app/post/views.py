@@ -21,8 +21,8 @@ from config.c import LargeResultsSetPagination
 from post.models import Post, SearchedWord, PostLike, PostImage
 from post.serializers import (
     PostCreateSerializer,
-    SearchedWordSerializer,
-    PostSerializer, PostLikeSerializer
+    PostSerializer,
+    PostLikeSerializer
 )
 from post.swaggers import (
     decorated_post_create_update_api
@@ -114,6 +114,9 @@ class PostCreateUpdateDestroy(ModelViewSet):
         photos = self.request.data.getlist('photos')
         for photo in photos:
             PostImage.objects.create(post=post, photo=photo)
+
+    def perform_update(self, serializer):
+        serializer.save(user=self.request.user)
 
     def get_object(self):
         qs = self.get_queryset()
