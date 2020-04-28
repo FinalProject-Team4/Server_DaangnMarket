@@ -2,13 +2,13 @@
 DaangnMarket clone project
 
 ## Table of contents
-- [Prerequisites](#Prerequisites)
-- [Installation](#Installation)
-- [Setup](#Setup)
-- [Deploy](#Deploy)
-- [API document](#API document)
+1. [Prerequisites](#1prerequisites)
+2. [Installation](#2installation)
+3. [Setup](#3setup)
+4. [Deploy](#4deploy)
+5. [API document](#5api_document)
 
-## Prerequisites
+## 1.Prerequisites
 ### Secrets JSON File
 `<project-root>/secrets.json`
 <details><summary><b>Show Sample</b></summary>
@@ -73,11 +73,11 @@ $ pip install firebase-admin
     
 </details>
 
-## Installation
+## 2.Installation
 ```sh
 $ pip install -r requirements.txt
 ```
-## Setup
+## 3.Setup
 ### Database
 `POSTGIS="2.5.2 r17328"`
 
@@ -121,10 +121,10 @@ django-extensions = "^2.2.9"
 
 </details>
 
-## Deploy
+## 4.Deploy
 ```sh
 $ <project-root>/deploy.py
 ```
 
-## API document
+## 5.API_document
 [daangn.shinjam.xyz/docs](http://daangn.shinjam.xyz/docs)
