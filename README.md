@@ -2,11 +2,11 @@
 DaangnMarket clone project
 
 ## Table of contents
-1. [Prerequisites](##1.Prerequisites)
-2. [Installation](##2.Installation)
-3. [Setup](##3.Setup)
-4. [Deploy](##4.Deploy)
-5. [API document](##5.API_document)
+1. [Prerequisites](#1.Prerequisites)
+2. [Installation](#2.Installation)
+3. [Setup](#3.Setup)
+4. [Deploy](#4.Deploy)
+5. [API document](#5.API_document)
 
 ## 1.Prerequisites
 ### Secrets JSON File
