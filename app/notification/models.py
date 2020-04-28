@@ -17,6 +17,7 @@ class Notification(models.Model):
     type = models.CharField(
         default='notice', max_length=10
     )
+    created = models.DateTimeField(auto_now_add=True)
     is_succeed = models.BooleanField(
         default=False, help_text='알림 성공 여부')
 
