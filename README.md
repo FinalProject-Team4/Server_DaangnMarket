@@ -63,13 +63,13 @@ $ pip install firebase-admin
 ### [GeoDjango](https://docs.djangoproject.com/en/3.0/ref/contrib/gis/install/#homebrew)  
 <details><summary><b>Show requirements</b></summary>
 
-    ```
-    // on mac
-    $ brew install postgresql
-    $ brew install postgis
-    $ brew install gdal
-    $ brew install libgeoip
-    ```
+```
+// on mac
+$ brew install postgresql
+$ brew install postgis
+$ brew install gdal
+$ brew install libgeoip
+```
     
 </details>
 
