@@ -13,4 +13,7 @@ class MembersAdmin(admin.ModelAdmin):
 
 @admin.register(SelectedLocation)
 class MembersAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['username', 'locate', 'verified', 'activated', 'distance']
+
+    def username(self, obj):
+        return obj.user.username
