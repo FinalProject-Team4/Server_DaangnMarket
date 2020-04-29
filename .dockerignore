@@ -1,0 +1,27 @@
+# Docker
+Dockerfile
+.dockerignore
+
+# Config
+.git
+.gitignore
+
+# Secrets
+#secrets.json
+
+# STATICS
+/static/css/*
+/staticfiles/*
+# Database
+**/db.*
+
+# ECT
+**/.DS_Store
+README.md
+__pycache__/
+**/__pycache__/
+deploy.py
+poetry.lock
+pyproject.toml
+LICENSE
+
