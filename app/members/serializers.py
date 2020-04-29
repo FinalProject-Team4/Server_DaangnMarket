@@ -85,6 +85,11 @@ class SetLocateSerializer(serializers.ModelSerializer):
         instance.full_clean()
         return attrs
 
+    def to_representation(self, instance):
+        ret = super(SetLocateSerializer, self).to_representation(instance)
+        ret['user'] = instance.user.username
+        return ret
+
     def to_internal_value(self, data):
         location = Locate.objects.get(pk=data['locate'])
         data['locate'] = location
@@ -92,7 +97,7 @@ class SetLocateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SelectedLocation
-        fields = ('locate', 'distance', 'verified', 'activated')
+        fields = ('user', 'locate', 'distance', 'verified', 'activated')
         examples = {
             'user': 'test-user',
             'distance': '1000',
