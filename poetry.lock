@@ -250,7 +250,7 @@ Django = ">=2.0"
 diff-match-patch = "*"
 
 [package.dependencies.tablib]
-extras = ["ods", "xls", "html", "yaml", "xlsx"]
+extras = ["xlsx", "yaml", "ods", "html", "xls"]
 version = ">=0.14.0"
 
 [[package]]
@@ -582,7 +582,7 @@ description = "A comprehensive HTTP client library."
 name = "httplib2"
 optional = false
 python-versions = "*"
-version = "0.17.3"
+version = "0.18.0"
 
 [[package]]
 category = "main"
@@ -1350,8 +1350,8 @@ http-ece = [
     {file = "http_ece-1.1.0.tar.gz", hash = "sha256:932ebc2fa7c216954c320a188ae9c1f04d01e67bec9cdce1bfbc912813b0b4f8"},
 ]
 httplib2 = [
-    {file = "httplib2-0.17.3-py3-none-any.whl", hash = "sha256:6d9722decd2deacd486ef10c5dd5e2f120ca3ba8736842b90509afcdc16488b1"},
-    {file = "httplib2-0.17.3.tar.gz", hash = "sha256:39dd15a333f67bfb70798faa9de8a6e99c819da6ad82b77f9a259a5c7b1225a2"},
+    {file = "httplib2-0.18.0-py3-none-any.whl", hash = "sha256:4f6988e6399a2546b525a037d56da34aed4d149bbdc0e78523018d5606c26e74"},
+    {file = "httplib2-0.18.0.tar.gz", hash = "sha256:b0e1f3ed76c97380fe2485bc47f25235453b40ef33ca5921bb2897e257a49c4c"},
 ]
 hyper = [
     {file = "hyper-0.7.0-py2.py3-none-any.whl", hash = "sha256:069514f54231fb7b5df2fb910a114663a83306d5296f588fffcb0a9be19407fc"},
