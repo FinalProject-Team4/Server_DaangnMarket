@@ -1,5 +1,5 @@
 # DaangnMarket_Back-End
-DaangnMarket clone project !!
+DaangnMarket clone project ..
 
 ## Table of contents
 1. [Prerequisites](#1prerequisites)
